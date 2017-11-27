@@ -89,8 +89,7 @@ deepGet( *collection*, *identity* )
     
     deepGet(complexObject, { type: 'test' })
     // returns: {type: "test"}
-    
-    
+     
 ```
 
 
@@ -120,14 +119,23 @@ locate( *collection*, *identity* )
     locate(complexObject, { type: 'test' })
     // returns: A.Example.DeeplyNested.AnotherProperty
     
-    
 ```
 
 
 identical( *identityA*, *identityB* )
 
 ```
-Give an example
+    const test = '5';
+    identical(test,'5') // returns: true
+    identical(test, 5 ) // returns: false
+    identical(test,[5]) // returns: false
+    
+    /** 
+    /* identical makes deep comparision between entities. 
+    /* Makes distintiction between datatypes, values, properties,
+    /* iterables ( Object !== Array), and child/nested entities.
+    **/
+    
 ```
 
 
@@ -162,7 +170,22 @@ Give an example
 getType( *identity* )
 
 ```
-Give an example
+getType(5) // returns: 'number'
+
+getType('apple')
+getType('7') // returns: 'string'
+
+getType(null) // returns: 'null'
+
+getType(undefined) // returns: 'undefined'
+
+getType([])
+getType(['one','two','three'])
+getType(['hello',4,{}]) // returns: 'array'
+
+getType({A: 'test', B: 'foobar'})
+getType({}) // returns: 'object'
+
 ```
 
 
