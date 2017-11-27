@@ -23,6 +23,47 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 
 ## Examples
 
+Dummy object used in examples:
+
+```
+const complexObject = {
+    A : {
+        Example : {
+            DeeplyNested : {
+                SamePropName     : 'SamePropName1',
+                OtherProperty    : ['One','Two','Three'],
+                AnotherProperty  : { type: 'test' }
+            }
+        }
+    },
+    B : '100',
+    C : { 
+        SamePropName     : 'SamePropName2',
+        OtherProperty    : ['x','y','z']
+    },
+    D : {
+        A : 100,
+        B : 'a string',
+        C : [
+            {
+                name : 'Andrew Redican',
+                id : 1,
+                description: 'this is a description HELLO'
+            },
+            {
+                name : 'John Teage',
+                id : 2,
+                description: 'this is a description WORLD'
+            }
+        ]
+    },
+    E : {
+        ANumber : 7,
+        OtherProperty : 'check this out'
+    }
+}
+```
+
 deepGet( *collection*, *identity* )
 
 ```
