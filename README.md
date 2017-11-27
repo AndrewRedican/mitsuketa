@@ -142,21 +142,84 @@ identical( *identityA*, *identityB* )
 trim( *identity*, *keyList* )
 
 ```
-Give an example
+    const O = {
+        propA : 'Test',
+        propB: [1,2,3],
+        propC: {
+            name: 'mitsuketa',
+            type : 'javascript'
+        },
+        propD: 37
+    };
+    
+    
+    trim(O,['propA','propB'])
+    returns { propA : 'Test', propB: [1,2,3] }
+    
+    
+    trim(O,[])
+    trim({},['propA','propB'])
+    trim([],['propA','propB'])
+    // returns undefined
+    
+```
+
+
+isIterable( *identity* )
+
+```
+    isIterable(5)
+    // returns false
+    
+    
+    isIterable({})
+    // returns false
+    
+    
+    isIterable({ A: '1', B: '2' })
+    isIterable([1,2,3])
+    // returns true
+    
 ```
 
 
 containsKeys( *identity*, *keyList* )
 
 ```
-Give an example
+    const O = {
+        propA : 'Test',
+        propB: [1,2,3],
+        propC: {
+            name: 'mitsuketa',
+            type : 'javascript'
+        },
+        propD: 37
+    };
+    
+    
+    containsKeys( O, 'propC' )
+    containsKeys( O, ['propA','propB'] )
+    // returns true
+    
+    
+    containsKeys( O, ['doesnt','exist'] )
+    // returns false
+    
 ```
 
 
 sameStructure( *identityA*, *identityB* )
 
 ```
-Give an example
+    const objA = { A: '4', B: 0, C: 'for the win' };
+    const objB = { A: null, B: {}, C: ['hello','world'] };
+    
+    sameStructure(objA,objB)
+    // returns true
+    
+    sameStructure(objA,{ A: 'missing', C: 'B property'})
+    // returns false
+    
 ```
 
 
