@@ -97,7 +97,30 @@ deepGet( *collection*, *identity* )
 locate( *collection*, *identity* )
 
 ```
-Give an example
+    locate(complexObject, 2)
+    // returns: D.C.1.id
+    
+    
+    locate(complexObject, { id : 1 })
+    // returns: D.C.0
+    
+    
+    locate(complexObject, '7')
+    // returns: false
+    
+    
+    locate(complexObject, 'this is a description WORLD')
+    // returns: D.C.1.description
+    
+    
+    locate(complexObject, 'x')
+    // returns: C.OtherProperty.0
+    
+    
+    locate(complexObject, { type: 'test' })
+    // returns: A.Example.DeeplyNested.AnotherProperty
+    
+    
 ```
 
 
