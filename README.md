@@ -67,7 +67,30 @@ const complexObject = {
 deepGet( *collection*, *identity* )
 
 ```
-Give an example
+    deepGet(complexObject, 2)
+    // returns: {name: "John Teage", id: 2, description: "this is a description WORLD"}
+    
+    
+    deepGet(complexObject, { id : 1 })
+    // returns: {name: "Andrew Redican", id: 1, description: "this is a description HELLO"}
+    
+    
+    deepGet(complexObject, '7')
+    // returns: undefined
+    
+    
+    deepGet(complexObject, 'this is a description WORLD')
+    // returns: {name: "John Teage", id: 2, description: "this is a description WORLD"} 
+    
+    
+    deepGet(complexObject, 'x')
+    // returns: ["x", "y", "z"]
+    
+    
+    deepGet(complexObject, { type: 'test' })
+    // returns: {type: "test"}
+    
+    
 ```
 
 
