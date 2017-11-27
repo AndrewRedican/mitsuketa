@@ -1,8 +1,8 @@
 {
   "name": "mitsuketa",
-  "version": "1.0.0",
+  "version": "1.0.9",
   "description": "A Javascript library that enables you to handle deeply nested objects easily.",
-  "main": "mitsuketa.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
