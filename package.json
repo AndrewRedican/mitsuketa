@@ -1,0 +1,23 @@
+{
+  "name": "mitsuketa",
+  "version": "1.0.0",
+  "description": "A Javascript library that enables you to handle deeply nested objects easily.",
+  "main": "mitsuketa.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndrewRedican/mitsuketa.git"
+  },
+  "keywords": [
+    "mitsuketa",
+    "deepsearch"
+  ],
+  "author": "Andrew Redican",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndrewRedican/mitsuketa/issues"
+  },
+  "homepage": "https://github.com/AndrewRedican/mitsuketa#readme"
+}
