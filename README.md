@@ -29,11 +29,13 @@ deepGet( *collection*, *identity* )
 Give an example
 ```
 
+
 locate( *collection*, *identity* )
 
 ```
 Give an example
 ```
+
 
 identical( *identityA*, *identityB* )
 
@@ -41,11 +43,13 @@ identical( *identityA*, *identityB* )
 Give an example
 ```
 
+
 trim( *identity*, *keyList* )
 
 ```
 Give an example
 ```
+
 
 containsKeys( *identity*, *keyList* )
 
@@ -53,11 +57,13 @@ containsKeys( *identity*, *keyList* )
 Give an example
 ```
 
+
 sameStructure( *identityA*, *identityB* )
 
 ```
 Give an example
 ```
+
 
 sameType( *identityA*, *identityB* )
 
@@ -65,11 +71,13 @@ sameType( *identityA*, *identityB* )
 Give an example
 ```
 
+
 getType( *identity* )
 
 ```
 Give an example
 ```
+
 
 ## Built With
 
