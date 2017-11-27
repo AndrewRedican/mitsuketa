@@ -23,49 +23,49 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 
 ## Examples
 
-deepGet(*collection*, *identity*)
+deepGet( *collection*, *identity* )
 
 ```
 Give an example
 ```
 
-locate(*collection*, *identity*)
+locate( *collection*, *identity* )
 
 ```
 Give an example
 ```
 
-identical(*identityA*,*identityB*)
+identical( *identityA*, *identityB* )
 
 ```
 Give an example
 ```
 
-trim(*identity*,*keyList*)
+trim( *identity*, *keyList* )
 
 ```
 Give an example
 ```
 
-containsKeys(*identity*,*keyList*)
+containsKeys( *identity*, *keyList* )
 
 ```
 Give an example
 ```
 
-sameStructure(*identityA*,*identityB*)
+sameStructure( *identityA*, *identityB* )
 
 ```
 Give an example
 ```
 
-sameType(*identityA*,*identityB*)
+sameType( *identityA*, *identityB* )
 
 ```
 Give an example
 ```
 
-getType(*identity*)
+getType( *identity* )
 
 ```
 Give an example
