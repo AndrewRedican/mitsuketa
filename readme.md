@@ -4,12 +4,6 @@ A Javascript library that enables you to handle deeply nested objects easily.
 
 ## Installation
 
-In a browser:
-
-```
-<script src="mitsuketa.js"></script>
-```
-
 Using npm:
 
 ```
