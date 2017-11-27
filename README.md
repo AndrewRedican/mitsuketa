@@ -170,21 +170,32 @@ Give an example
 getType( *identity* )
 
 ```
-getType(5) // returns: 'number'
+    getType(5)
+    // returns: 'number'
 
-getType('apple')
-getType('7') // returns: 'string'
 
-getType(null) // returns: 'null'
+    getType('7')
+    getType('apple')
+    // returns: 'string'
 
-getType(undefined) // returns: 'undefined'
 
-getType([])
-getType(['one','two','three'])
-getType(['hello',4,{}]) // returns: 'array'
+    getType(null)
+    // returns: 'null'
 
-getType({A: 'test', B: 'foobar'})
-getType({}) // returns: 'object'
+
+    getType(void(0))
+    getType(undefined)
+    // returns: 'undefined'
+
+
+    getType([])
+    getType(['one','two','three'])
+    getType(['hello',4,{}])
+    // returns: 'array'
+
+    getType({})
+    getType({A: 'test', B: 'foobar'})
+    // returns: 'object'
 
 ```
 
