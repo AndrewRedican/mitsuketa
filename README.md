@@ -163,7 +163,25 @@ Give an example
 sameType( *identityA*, *identityB* )
 
 ```
-Give an example
+    sameType(10,8)
+    // returns : 'number'
+    
+    
+    sameType(10,'8')
+    // returns : false
+    
+    
+    sameType('hype','8')
+    // returns : 'string'
+    
+    
+    sameType({ print: 3 }, { print: 'foobar' })
+    // returns : 'object'
+    
+    
+    sameType([], ['one',2,'III'])
+    // returns : 'array'
+    
 ```
 
 
