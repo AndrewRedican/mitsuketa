@@ -61,19 +61,12 @@ const complexObject = {
 ### deepFilter( *collection*, *identity* )
 Performs deep search on collection to find all matches to the identity, will return the entity containing the matched instances.
 
-```
+_*See **deepGet().** Performs similar operation. Instead of returning a single identity, it returns an array of all containers with matching identities._
 
-
-
-```
 ### locateAll( *collection*, *identity* )
 Performs deep search on collection to find all matches to the identity, returns a string array.
 
-```
-
-
-
-```
+_*See **locate().** Performs similar operation. Instead of returning a single path, it returns an array of all paths of containers with matching the identities._
 
 ### deepGet( *collection*, *identity* )
 Performs deep search on collection to find a match to the identity, will return the entity containing of the first instance matched.
@@ -306,7 +299,7 @@ Gets data type. Also makes distintion between object, array, and null.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Acknowledgments
 
