@@ -58,7 +58,7 @@ const complexObject = {
 }
 ```
 
-deepGet( *collection*, *identity* )
+### deepGet( *collection*, *identity* )
 
 ```
     deepGet(complexObject, 2)
@@ -87,7 +87,7 @@ deepGet( *collection*, *identity* )
 ```
 
 
-locate( *collection*, *identity* )
+### locate( *collection*, *identity* )
 
 ```
     locate(complexObject, 2)
@@ -116,7 +116,7 @@ locate( *collection*, *identity* )
 ```
 
 
-identical( *identityA*, *identityB* )
+### identical( *identityA*, *identityB* )
 
 ```
     const test = '5';
@@ -133,7 +133,7 @@ identical( *identityA*, *identityB* )
 ```
 
 
-trim( *identity*, *keyList* )
+### trim( *identity*, *keyList* )
 
 ```
     const O = {
@@ -159,7 +159,7 @@ trim( *identity*, *keyList* )
 ```
 
 
-isIterable( *identity* )
+### isIterable( *identity* )
 
 ```
     isIterable(5)
@@ -177,7 +177,7 @@ isIterable( *identity* )
 ```
 
 
-containsKeys( *identity*, *keyList* )
+### containsKeys( *identity*, *keyList* )
 
 ```
     const O = {
@@ -202,7 +202,7 @@ containsKeys( *identity*, *keyList* )
 ```
 
 
-sameStructure( *identityA*, *identityB* )
+### sameStructure( *identityA*, *identityB* )
 
 ```
     const objA = { A: '4', B: 0, C: 'for the win' };
@@ -217,7 +217,7 @@ sameStructure( *identityA*, *identityB* )
 ```
 
 
-sameType( *identityA*, *identityB* )
+### sameType( *identityA*, *identityB* )
 
 ```
     sameType(10,8)
@@ -242,7 +242,7 @@ sameType( *identityA*, *identityB* )
 ```
 
 
-getType( *identity* )
+### getType( *identity* )
 
 ```
     getType(5)
