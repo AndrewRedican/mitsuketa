@@ -58,7 +58,25 @@ const complexObject = {
 }
 ```
 
+### deepFilter( *collection*, *identity* )
+Performs deep search on collection to find all matches to the identity, will return the entity containing the matched instances.
+
+```
+
+
+
+```
+### locateAll( *collection*, *identity* )
+Performs deep search on collection to find all matches to the identity, returns a string array.
+
+```
+
+
+
+```
+
 ### deepGet( *collection*, *identity* )
+Performs deep search on collection to find a match to the identity, will return the entity containing of the first instance matched.
 
 ```
     deepGet(complexObject, 2)
@@ -88,14 +106,15 @@ const complexObject = {
 
 
 ### locate( *collection*, *identity* )
+Performs deep search on collection to find a match to the identity, will return the path of the first instance matched.
 
 ```
     locate(complexObject, 2)
-    // returns: D.C.1.id
+    // returns: 'D.C.1.id'
     
     
     locate(complexObject, { id : 1 })
-    // returns: D.C.0
+    // returns: 'D.C.0'
     
     
     locate(complexObject, '7')
@@ -103,37 +122,38 @@ const complexObject = {
     
     
     locate(complexObject, 'this is a description WORLD')
-    // returns: D.C.1.description
+    // returns: 'D.C.1.description'
     
     
     locate(complexObject, 'x')
-    // returns: C.OtherProperty.0
+    // returns: 'C.OtherProperty.0'
     
     
     locate(complexObject, { type: 'test' })
-    // returns: A.Example.DeeplyNested.AnotherProperty
+    // returns: 'A.Example.DeeplyNested.AnotherProperty'
     
 ```
 
 
 ### identical( *identityA*, *identityB* )
+Compares two identities, will return either true if identical, otherwise false. Makes distintiction between datatypes, values, properties, iterables ( Object !== Array), and child/nested entities.
 
 ```
     const test = '5';
+    
     identical(test,'5') // returns: true
+    
     identical(test, 5 ) // returns: false
+    
     identical(test,[5]) // returns: false
     
-    /** 
-    /* identical makes deep comparision between entities. 
-    /* Makes distintiction between datatypes, values, properties,
-    /* iterables ( Object !== Array), and child/nested entities.
-    **/
+    identical({A: 'Hello'},{A: 'Hi!'}) // returns: false
     
 ```
 
 
 ### trim( *identity*, *keyList* )
+Trims an identity to only contain the specified properties.
 
 ```
     const O = {
@@ -160,6 +180,7 @@ const complexObject = {
 
 
 ### isIterable( *identity* )
+Checks if identity has one or more keys to iterate
 
 ```
     isIterable(5)
@@ -178,7 +199,7 @@ const complexObject = {
 
 
 ### containsKeys( *identity*, *keyList* )
-
+Checks if identity contains all of the specified keys
 ```
     const O = {
         propA : 'Test',
@@ -203,7 +224,7 @@ const complexObject = {
 
 
 ### sameStructure( *identityA*, *identityB* )
-
+Compares data structure of two identities, will return either the dataType or true/false.
 ```
     const objA = { A: '4', B: 0, C: 'for the win' };
     const objB = { A: null, B: {}, C: ['hello','world'] };
@@ -218,7 +239,7 @@ const complexObject = {
 
 
 ### sameType( *identityA*, *identityB* )
-
+Compares data type of two identities, will dataType if true.
 ```
     sameType(10,8)
     // returns : 'number'
@@ -243,7 +264,7 @@ const complexObject = {
 
 
 ### getType( *identity* )
-
+Gets data type. Also makes distintion between object, array, and null.
 ```
     getType(5)
     // returns: 'number'
