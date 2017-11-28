@@ -3,8 +3,63 @@
  */
 
 
+
+/**
+ * Performs deep search on collection to find a match to the identity, will return the entity containing the matched instances.
+ * @param {Any} collection
+ * @param {Any} identity
+ * @return {Array || undefined} For positive matches returns a string array to the paths of the locations, otherwise undefined
+ */
+function deepFilter(collection, identity){
+    var paths = locateAll(collection, identity);
+    if(paths === false) return undefined;
+    const results = paths.map(path => {
+        if(path === '') return collection;
+        path = path.split('.');
+        if(['array','object'].indexOf(getType(identity)) === - 1) path.splice(-1,1);
+        var result = collection;
+        if(!Array.isArray(path)) return result[path];
+        path.forEach( key => { result = result[key]; });
+        return result;
+    })
+    return results;
+}
+
+/**
+ * Performs deep search on collection to find all matches to the identity, returns a string array.
+ * @param {Any} collection
+ * @param {Any} identity
+ * @return {Array || false} For positive matching returns an array of paths to the locations, otherwise false
+ */
+function locateAll(collection, identity){
+    var R = [];
+    function _locateAll(collection, identity, path = ''){
+        if(isIterable(identity))
+        if(sameType(collection,identity))
+        if(containsKeys(collection,Object.keys(identity))){
+            const trimmed = trim(collection,Object.keys(identity));
+            if(identical(trimmed,identity)) R[R.length] = path;
+        }
+        if(identical(collection,identity)) R[R.length] = path;
+        var result = false;
+        if(isIterable(collection))
+        for(var i = 0, keys = Object.keys(collection), l = keys.length; i < l; i++ ){
+            const key = keys[i], subcollection = collection[key];
+            _locateAll(subcollection,identity,(path === '' ? path : path + '.') + key);
+        }    
+    }
+    _locateAll(collection, identity);
+    return R.length === 0 ? false : R;
+}
+
+/**
+ * Performs deep search on collection to find a match to the identity, will return the entity containing of the first instance matched.
+ * @param {Any} collection
+ * @param {Any} identity
+ * @return {String || undefined} For positive match returns the path of the location as string, otherwise undefined
+ */
 function deepGet(collection, identity){
-    var path = locate(collection, identity); console.log(path);
+    var path = locate(collection, identity);
     if(path === false) return undefined;
     if(path === '') return collection;
     path = path.split('.');
@@ -17,8 +72,8 @@ function deepGet(collection, identity){
 
 /**
  * Performs deep search on collection to find a match to the identity, will return the path of the first instance matched.
- * @param {Any} identity
  * @param {Any} collection
+ * @param {Any} identity
  * @return {String || False} For positive match returns the path to location as string, otherwise false
  */
 function locate(collection, identity, path = ''){
@@ -61,6 +116,7 @@ function trim(identity,keyList){
 /**
  * Check if identity contains all of the specified keys
  * @param {Any} identity
+ * @param {Any} keyList
  * @return {boolean} true || false
  */
 function containsKeys(identity,keyList){
@@ -151,19 +207,18 @@ function getType(identity) {
     return it;
 }
 
-
 mitsuketa = {
-    getType          : function(identity) { return getType(identity)}, 
-    sameType         : function(identityA,identityB) { return sameType(identityA,identityB)},
-    sameStructure    : function(identityA,identityB) { return sameStructure(identityA,identityB)},
-    identical        : function(identityA,identityB) { return identical(identityA,identityB)},
-    isIterable       : function(identity) { return isIterable(identity)},
-    containsKeys     : function(identity,keyList) { return containsKeys(identity,keyList)},
-    trim             : function(identity,keyList) { return trim(identity,keyList)},
-    locate           : function(collection, identity) { return locate(collection, identity)},
-    deepGet          : function(collection, identity) { return deepGet(collection, identity)}
+    getType          : function(identity)                { return getType(identity);                     }, 
+    sameType         : function(identityA,identityB)     { return sameType(identityA,identityB);         },
+    sameStructure    : function(identityA,identityB)     { return sameStructure(identityA,identityB);    },
+    identical        : function(identityA,identityB)     { return identical(identityA,identityB);        },
+    isIterable       : function(identity)                { return isIterable(identity);                  },
+    containsKeys     : function(identity,keyList)        { return containsKeys(identity,keyList);        },
+    trim             : function(identity,keyList)        { return trim(identity,keyList);                },
+    locate           : function(collection, identity)    { return locate(collection, identity);          },
+    deepGet          : function(collection, identity)    { return deepGet(collection, identity);         },
+    locateAll        : function(collection, identity)    { return locateAll(collection, identity);       },
+    deepFilter       : function(collection, identity)    { return deepFilter(collection, identity);      }
 }
 
-
 module.exports = exports = mitsuketa;
-
