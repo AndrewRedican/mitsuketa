@@ -304,3 +304,8 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ## Acknowledgments
 
 * Got my inspiration from lodash.js
+
+## Help me improve!
+
+If you have a minute to spare, can you answer these two questions?
+https://www.surveymonkey.com/r/XJ37XSP
