@@ -17,20 +17,20 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 
 ## Overview
 
-| Method Name   | Description                 | Parameters/Input  | Output  |
+| Method   | Description                 | Parameters/Input  | Output  |
 | ------------- |-----------------------------| ------| :-----:|
-| [getType](https://github.com/AndrewRedican/mitsuketa/wiki)       | Gets `typeof` `identity` also makes distinction between `object`, `null`, and `array`               | identity | string |
-| [sameType](https://github.com/AndrewRedican/mitsuketa/wiki)      | Compares two `identities` using `getType` method | identityA, identityB | `identity` or `false` |
-| [sameStructure](https://github.com/AndrewRedican/mitsuketa/wiki) | Compares two `identities` using `sameType` then validates both have the same `keys`  | identityA, identityB | `identity` or `false` |
-| [identical](https://github.com/AndrewRedican/mitsuketa/wiki)     | Compares two `identities` using `sameStructure` then validates children or nested structures for `iterble identities` or actual `values`  | identityA, identityB | `identity` or `false` |
-| [isIterable](https://github.com/AndrewRedican/mitsuketa/wiki)    | Checks if `identity` contains one or more keys or properties       | identity | boolean |
-| [length](https://github.com/AndrewRedican/mitsuketa/wiki)        | Returns the number of keys or properties contained in `identity` | identity | number |
-| [containsKeys](https://github.com/AndrewRedican/mitsuketa/wiki)  | Checks if `identity` contains the specified properties | identity, keyList | boolean |
-| [trim](https://github.com/AndrewRedican/mitsuketa/wiki)          | Removes properties from `identity` and only keeps the specified properties | identity, keyList | `identity` |
-| [locate](https://github.com/AndrewRedican/mitsuketa/wiki)        | Performs a deep search by iterating through the `collection`'s entire object tree an returns the path to the first `identical` match that is found as a string of dot . separated property names | collection, identity | string |
-| [deepGet](https://github.com/AndrewRedican/mitsuketa/wiki)       | Uses `locate` and returns the `indentity`'s container if found in `collection` |    collection, identity | identity |
-| [locateAll](https://github.com/AndrewRedican/mitsuketa/wiki)     | Uses `locate` and returns all the paths to all matches | collection, identity | array of string |
-| [deepFilter](https://github.com/AndrewRedican/mitsuketa/wiki)    | Users `locateAll` and returns an array of all an identites matched inside `collection`  | collection, identity | array of identities |
+| [getType](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)       | Gets `typeof` `identity` also makes distinction between `object`, `null`, and `array`               | identity | string |
+| [sameType](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)      | Compares two `identities` using `getType` method | identityA, identityB | `identity` or `false` |
+| [sameStructure](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features) | Compares two `identities` using `sameType` then validates both have the same `keys`  | identityA, identityB | `identity` or `false` |
+| [identical](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)     | Compares two `identities` using `sameStructure` then validates children or nested structures for `iterble identities` or actual `values`  | identityA, identityB | `identity` or `false` |
+| [isIterable](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)    | Checks if `identity` contains one or more keys or properties       | identity | boolean |
+| [length](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)        | Returns the number of keys or properties contained in `identity` | identity | number |
+| [containsKeys](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)  | Checks if `identity` contains the specified properties | identity, keyList | boolean |
+| [trim](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)          | Removes properties from `identity` and only keeps the specified properties | identity, keyList | `identity` |
+| [locate](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)        | Performs a deep search by iterating through the `collection`'s entire object tree an returns the path to the first `identical` match that is found as a string of dot . separated property names | collection, identity | string |
+| [deepGet](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)       | Uses `locate` and returns the `indentity`'s container if found in `collection` |    collection, identity | identity |
+| [locateAll](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)     | Uses `locate` and returns all the paths to all matches | collection, identity | array of string |
+| [deepFilter](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0-Features)    | Users `locateAll` and returns an array of all an identites matched inside `collection`  | collection, identity | array of identities |
 | [exists](https://github.com/AndrewRedican/mitsuketa/wiki)        | Performs deep search on `collection` for an identical match to `identity` | collection, identity | boolean |
 | [onlyExisting](https://github.com/AndrewRedican/mitsuketa/wiki)  | For each identity in `identities`, performs a deep search on `collection` using `exists`, to shorten the list `identities` to those that were found | collection, identities | identities |
 | [onlyMissing](https://github.com/AndrewRedican/mitsuketa/wiki)   | For each identity in `identities`, performs a deep search on `collection` using `exists`, to shorten the list `identities` to those that were **not** found | collection, identities | identities |
