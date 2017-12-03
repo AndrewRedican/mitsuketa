@@ -19,8 +19,7 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 
 | Method   | Description                 | Parameters/Input  | Output  |
 | ------------- |-----------------------------| ------| :-----:|
-| [getType](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#gettype-identity-
-)       | Gets `typeof` `identity` also makes distinction between `object`, `null`, and `array`               | identity | string |
+| [getType](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#gettype-identity-) | Gets `typeof` `identity` also makes distinction between `object`, `null`, and `array`               | identity | string |
 | [sameType](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#sametype-identitya-identityb-
 )      | Compares two `identities` using `getType` method | identityA, identityB | `identity` or `false` |
 | [sameStructure](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#samestructure-identitya-identityb-) | Compares two `identities` using `sameType` then validates both have the same `keys`  | identityA, identityB | `identity` or `false` |
