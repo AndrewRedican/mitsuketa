@@ -15,6 +15,33 @@ $ npm i --save mitsuketa
 
 Mitsuketa makes JavaScript easier by taking the hassle out of working with deeply nested data structures. Allows you to strict compare object, locate deeply nested entities, etc.
 
+## Overview
+
+| Method Name   | Description                 | Parameters/Input  | Output  |
+| ------------- |-----------------------------| ------| :-----:|
+| [getType](https://github.com/AndrewRedican/mitsuketa/wiki)       | Gets `typeof` `identity` also makes distinction between `object`, `null`, and `array`               | identity | string |
+| [sameType](https://github.com/AndrewRedican/mitsuketa/wiki)      | Compares two `identities` using `getType` method | identityA, identityB | `identity` or `false` |
+| [sameStructure](https://github.com/AndrewRedican/mitsuketa/wiki) | Compares two `identities` using `sameType` then validates both have the same `keys`  | identityA, identityB | `identity` or `false` |
+| [identical](https://github.com/AndrewRedican/mitsuketa/wiki)     | Compares two `identities` using `sameStructure` then validates children or nested structures for `iterble identities` or actual `values`  | identityA, identityB | `identity` or `false` |
+| [isIterable](https://github.com/AndrewRedican/mitsuketa/wiki)    | Checks if `identity` contains one or more keys or properties       | identity | boolean |
+| [length](https://github.com/AndrewRedican/mitsuketa/wiki)        | Returns the number of keys or properties contained in `identity` | identity | number |
+| [containsKeys](https://github.com/AndrewRedican/mitsuketa/wiki)  | Checks if `identity` contains the specified properties | identity, keyList | boolean |
+| [trim](https://github.com/AndrewRedican/mitsuketa/wiki)          | Removes properties from `identity` and only keeps the specified properties | identity, keyList | `identity` |
+| [locate](https://github.com/AndrewRedican/mitsuketa/wiki)        | Performs a deep search by iterating through the `collection`'s entire object tree an returns the path to the first `identical` match that is found as a string of dot . separated property names | collection, identity | string |
+| [deepGet](https://github.com/AndrewRedican/mitsuketa/wiki)       | Uses `locate` and returns the `indentity`'s container if found in `collection` |    collection, identity | identity |
+| [locateAll](https://github.com/AndrewRedican/mitsuketa/wiki)     | Uses `locate` and returns all the paths to all matches | collection, identity | array of string |
+| [deepFilter](https://github.com/AndrewRedican/mitsuketa/wiki)    | Users `locateAll` and returns an array of all an identites matched inside `collection`  | collection, identity | array of identities |
+| [exists](https://github.com/AndrewRedican/mitsuketa/wiki)        | Performs deep search on `collection` for an identical match to `identity` | collection, identity | boolean |
+| [onlyExisting](https://github.com/AndrewRedican/mitsuketa/wiki)  | For each identity in `identities`, performs a deep search on `collection` using `exists`, to shorten the list `identities` to those that were found | collection, identities | identities |
+| [onlyMissing](https://github.com/AndrewRedican/mitsuketa/wiki)   | For each identity in `identities`, performs a deep search on `collection` using `exists`, to shorten the list `identities` to those that were **not** found | collection, identities | identities |
+| [isFalsy](https://github.com/AndrewRedican/mitsuketa/wiki)       | Checks if identity has or false or false-like values. These include: null, undefined, '', false, and 0 | identity | `identity` or `false` |
+| [isTruthy](https://github.com/AndrewRedican/mitsuketa/wiki)      | Checks if identity is non-falsy | identity | `identity` or `false` |
+| [foundTruthy](https://github.com/AndrewRedican/mitsuketa/wiki)   | Performs deep search on `collection`, and evaluate if `isTruthy` on the first identical match to `identity` | collection, identity | boolean |
+| [foundFalsy](https://github.com/AndrewRedican/mitsuketa/wiki)    | Performs deep search on `collection`, and evaluate if `isFalsy` on the first identical match to `identity` | collection, identity | boolean |
+| [onlyTruthy](https://github.com/AndrewRedican/mitsuketa/wiki)    | For each identity in `identities`, performs a deep search on `collection` using `exists`, and evaluates if `isTruthy` on the first identical match of `property` to shorten the list `identities` to those that were found and also truthy | collection, identities, property | identities |
+| [onlyFalsy](https://github.com/AndrewRedican/mitsuketa/wiki)     | For each identity in `identities`, performs a deep search on `collection` using `exists`, and evaluates if `isFalsy` on the first identical match of `property` to shorten the list `identities` to those that were found and also truthy | collection, identities, property | identities |
+
+
 ## Examples
 
 Dummy object used in examples:
