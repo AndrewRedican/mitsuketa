@@ -10,4 +10,4 @@ branches:
 notifications:
   email: false
 script:
-  - npm run validate
+  - npm run test
