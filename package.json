@@ -1,6 +1,6 @@
 {
   "name": "mitsuketa",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "A Javascript library that enables you to handle deeply nested objects easily.",
   "main": "index.js",
   "scripts": {
@@ -25,6 +25,6 @@
   },
   "homepage": "https://github.com/AndrewRedican/mitsuketa#readme",
   "dependencies": {
-    "validate": "^3.0.1"
+    
   }
 }
