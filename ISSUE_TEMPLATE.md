@@ -1,4 +1,4 @@
-1. What version of Go are you using (go version)?
+1. What version of Mitsuketa are you using (mitsuketa version)?
 2. What operating system and processor architecture are you using?
 3. What did you do?
 4. What did you expect to see?
