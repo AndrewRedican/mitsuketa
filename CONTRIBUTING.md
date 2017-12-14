@@ -82,7 +82,7 @@ This is the checklist that I try to go through for every single pull request tha
     - [ ] Comment on the PR "Can you please add tests for this code to `test_blah.py`", or...
     - [ ] Write the tests yourself.
 
-- [ ] Do the tests pass for all of the following? If not, write a note in the PR, or fix them yourself.
+- [ ] Do the tests pass for all of the following? If not, write a note in the PR, or fix them yourself. [**Read about testing**](https://github.com/AndrewRedican/mitsuketa/wiki/How-to-Create-and-Run-Tests)
 
     - [ ] *Outlines have not been defined yet.*
 
