@@ -2,6 +2,29 @@
  * @author Andrew Redican <andrew.redican.mejia@gmail.com>
  */
 
+/**
+ * Performs deep search for identity on collection, returns the number of matches found by in a specific depth.
+ * If depth not provided, it will return the total number of matches including all depths.
+ * @param {Any} collection
+ * @param {Any} identity
+ * @param { Null || number } depth
+ * @return {Any} Returns number of matches found.
+ */
+function countMatches(collection, identity, depth=null){
+    var paths = locateAll(collection, identity);
+    if(paths===false) return 0;
+    if(option===null) return paths.length;
+    if(getType(option)==='number'){
+        let count = 0;
+        paths.forEach( path => { 
+            path = path.split('.');
+            if(path.length===option) count++;
+        });
+        return count;
+    }
+    return undefined;
+}
+
  /**
  * Performs deep search for each identity on collection, to shorten the identities to those that meets the match criteria
  * @param {Any} collection
@@ -9,7 +32,7 @@
  * @param {Any} property
  * @return {Any} Returns a collection of the same type as the 'identities' parameter provided with only the identities that matched.
  */
-function onlyFalsy(collection,identities,property){
+function onlyFalsy(collection,identities,property, maxdepth=null){
     if(getType(identities)==='array'){
         let result = [];
         identities.forEach( identity => { 
@@ -39,7 +62,7 @@ function onlyFalsy(collection,identities,property){
  * @param {Property} identity
  * @return {boolean} If match confirmed and truthy will return true, otherwise false
  */
-function foundFalsy(collection,identity){
+function foundFalsy(collection,identity, maxdepth=null){
     identity = singleProperty(identity);
     if(isFalsy(identity)) return undefined;
     function _foundFalsy(collection, identity){
@@ -63,7 +86,7 @@ function foundFalsy(collection,identity){
  * @param {Any} property
  * @return {Any} Returns a collection of the same type as the 'identities' parameter provided with only the identities that matched.
  */
-function onlyTruthy(collection,identities,property){
+function onlyTruthy(collection,identities,property, maxdepth=null){
     if(getType(identities)==='array'){
         let result = [];
         identities.forEach( identity => { 
@@ -93,7 +116,7 @@ function onlyTruthy(collection,identities,property){
  * @param {Property} identity
  * @return {boolean} If match confirmed and truthy will return true, otherwise false
  */
-function foundTruthy(collection,identity){
+function foundTruthy(collection,identity, maxdepth=null){
     identity = singleProperty(identity);
     if(isFalsy(identity)) return undefined;
     function _foundTruthy(collection, identity){
@@ -168,7 +191,7 @@ function length(identity){
  * @param {Any} identities
  * @return {Any} Returns a collection of the same type as the 'identities' parameter provided with only the identities that were not matched.
  */
-function onlyMissing(collection,identities){
+function onlyMissing(collection,identities, maxdepth=null){
     if(getType(identities)==='array'){
         let result = [];
         identities.forEach( identity => { 
@@ -193,7 +216,7 @@ function onlyMissing(collection,identities){
  * @param {Any} identities
  * @return {Any} Returns a collection of the same type as the 'identities' parameter provided with only the identities that matched.
  */
-function onlyExisting(collection,identities){
+function onlyExisting(collection,identities, maxdepth=null){
     if(getType(identities)==='array'){
         let result = [];
         identities.forEach( identity => { 
@@ -218,7 +241,7 @@ function onlyExisting(collection,identities){
  * @param {Any} identity
  * @return {boolean} If a match is confirmed will return true, otherwise false
  */
-function exists(collection, identity){
+function exists(collection, identity, maxdepth=null){
     if(identical(collection,identity)) return true;
     if(isIterable(identity))
     if(sameType(collection,identity))
@@ -242,7 +265,7 @@ function exists(collection, identity){
  * @param {Any} identity
  * @return {Array || undefined} For positive matches returns a string array to the paths of the locations, otherwise undefined
  */
-function deepFilter(collection, identity){
+function deepFilter(collection, identity, maxdepth=null){
     var paths = locateAll(collection, identity);
     if(paths === false) return undefined;
     const results = paths.map(path => {
@@ -263,7 +286,7 @@ function deepFilter(collection, identity){
  * @param {Any} identity
  * @return {Array || false} For positive matching returns an array of paths to the locations, otherwise false
  */
-function locateAll(collection, identity){
+function locateAll(collection, identity, maxdepth=null){
     var R = [];
     function _locateAll(collection, identity, path = ''){
         if(isIterable(identity))
@@ -290,7 +313,7 @@ function locateAll(collection, identity){
  * @param {Any} identity
  * @return {String || undefined} For positive match returns the path of the location as string, otherwise undefined
  */
-function deepGet(collection, identity){
+function deepGet(collection, identity, maxdepth=null){
     var path = locate(collection, identity);
     if(path === false) return undefined;
     if(path === '') return collection;
@@ -308,7 +331,7 @@ function deepGet(collection, identity){
  * @param {Any} identity
  * @return {String || False} For positive match returns the path to location as string, otherwise false
  */
-function locate(collection, identity, path = ''){
+function locate(collection, identity, path = '', maxdepth=null){
     if(isIterable(identity))
     if(sameType(collection,identity))
     if(containsKeys(collection,Object.keys(identity))){
@@ -340,15 +363,16 @@ function trim(identity,keyList){
     if(keyCount === 0) return undefined;
     var newIdentity;
     switch(identityType){
-        case 'object'    : newIdentity = {}; keyList.forEach(key => { newIdentity[key] = identity[key]; }); return newIdentity; break;
-        case 'array'     : newIdentity = keyList.map(key => { return identity[key]; }); return newIdentity; break;
+        case 'object' : newIdentity = {}; keyList.forEach(key => { if(key in identity) newIdentity[key] = identity[key]; }); break;
+        case 'array'  : newIdentity = []; keyList.forEach(key => { if(key in identity) newIdentity.push(identity[key]); }); break;
     }
+    return newIdentity;
 }
 
 /**
  * Check if identity contains all of the specified keys
  * @param {Any} identity
- * @param {Any} keyList
+ * @param {Array} keyList
  * @return {boolean} true || false
  */
 function containsKeys(identity,keyList){
@@ -357,7 +381,7 @@ function containsKeys(identity,keyList){
     const identitykeys = Object.keys(identity);
     var result = true;
     for(var i = 0; i < keyCount; i++){
-        const key = keyList[i];
+        const key = '' + keyList[i]; 
         if(identitykeys.indexOf(key) === -1){ result = false; break; }
     }
     return result;
