@@ -1,6 +1,6 @@
 # Mitsuketa ![Build Status](https://travis-ci.org/AndrewRedican/mitsuketa.svg?branch=master)
 
-A Javascript library that enables you to handle deeply nested objects easily.
+<p align="center"><img src=http://i.imgur.com/qF1mmY5.png><br /><br />A Javascript library that enables you to handle deeply nested objects easily.</p>
 
 ## Installation
 
