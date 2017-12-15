@@ -216,14 +216,16 @@ const complexObject = {
           DeeplyNested : {
               SamePropName     : 'SamePropName1',
               OtherProperty    : ['One','Two','Three'],
-              AnotherProperty  : { type: 'test' }
+              AnotherProperty  : { type: 'test' },
+              DepthTest        : 'sameValue'
           }
       }
   },
   B : '100',
   C : { 
       SamePropName     : 'SamePropName2',
-      OtherProperty    : ['x','y','z']
+      OtherProperty    : ['x','y','z'],
+      DepthTest        : 'sameValue'
   },
   D : {
       A : 100,
@@ -264,6 +266,27 @@ describe('locate(collection,identity)', function() {
   });
 });
 
+describe('locate(collection,identity,maxDepth)', function() {
+  var tests = [
+    {args: [complexObject,2,0],                           expected: false                    },
+    {args: [complexObject,2,1],                           expected: false                    },
+    {args: [complexObject,2,2],                           expected: false                    },
+    {args: [complexObject,2,3],                           expected: false                    },
+    {args: [complexObject,2,4],                           expected: 'D.C.1.id'               },
+    {args: [complexObject,{DepthTest : 'sameValue'},0],   expected: false                    },
+    {args: [complexObject,{DepthTest : 'sameValue'},1],   expected: 'C'                      },
+    {args: [complexObject,{DepthTest : 'sameValue'},2],   expected: 'C'                      },
+    {args: [complexObject,{DepthTest : 'sameValue'},3],   expected: 'A.Example.DeeplyNested' },
+    {args: [complexObject,{DepthTest : 'sameValue'},4],   expected: 'A.Example.DeeplyNested' }
+  ];
+  tests.forEach(function(test) {
+    it(opDesciption(3,test.args,test.expected), function() {
+      var res = mitsuketa.locate(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
 describe('deepGet(collection,identity)', function() {
   var tests = [
     {args: [complexObject,2],                             expected: {name: 'John Teage', id: 2, description: 'this is a description WORLD'}       },
@@ -281,6 +304,119 @@ describe('deepGet(collection,identity)', function() {
   });
 });
 
+describe('deepGet(collection,identity,maxDepth)', function() {
+  var res1 = { 
+    SamePropName  : 'SamePropName2',
+    OtherProperty : ['x','y','z'],
+    DepthTest     : 'sameValue'
+  };
+  var res2 = {
+    SamePropName     : 'SamePropName1',
+    OtherProperty    : ['One','Two','Three'],
+    AnotherProperty  : { type: 'test' },
+    DepthTest        : 'sameValue'
+  };
+  var tests = [
+    {args: [complexObject,2,0],                           expected: undefined                                                               },
+    {args: [complexObject,2,1],                           expected: undefined                                                               },
+    {args: [complexObject,2,2],                           expected: undefined                                                               },
+    {args: [complexObject,2,3],                           expected: undefined                                                               },
+    {args: [complexObject,2,4],                           expected: {name: 'John Teage', id: 2, description: 'this is a description WORLD'} },
+    {args: [complexObject,{DepthTest : 'sameValue'},0],   expected: undefined                                                               },
+    {args: [complexObject,{DepthTest : 'sameValue'},1],   expected: res1                                                                    },
+    {args: [complexObject,{DepthTest : 'sameValue'},2],   expected: res1                                                                    },
+    {args: [complexObject,{DepthTest : 'sameValue'},3],   expected: res2                                                                    },
+    {args: [complexObject,{DepthTest : 'sameValue'},4],   expected: res2                                                                    }
+  ];
+  tests.forEach(function(test) {
+    it(opDesciption(3,test.args,test.expected), function() {
+      var res = mitsuketa.deepGet(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('locateAll(collection,identity)', function() {
+  var tests = [
+    {args: [complexObject,2],                             expected: ['D.C.1.id']                   },
+    {args: [complexObject,{ id : 1 }],                    expected: ['D.C.0']                      },
+    {args: [complexObject,'7'],                           expected: false                          },
+    {args: [complexObject,'x'],                           expected: ['C.OtherProperty.0']          },
+    {args: [complexObject,{DepthTest : 'sameValue'}],     expected: ['A.Example.DeeplyNested','C'] }
+  ];
+  tests.forEach(function(test) {
+    it(opDesciption(2,test.args,test.expected), function() {
+      var res = mitsuketa.locateAll(test.args[0],test.args[1]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('locateAll(collection,identity,maxDepth)', function() {
+  var tests = [
+    {args: [complexObject,2,2],                         expected: false                          },
+    {args: [complexObject,2,4],                         expected: ['D.C.1.id']                   },
+    {args: [complexObject,{DepthTest : 'sameValue'},1], expected: ['C']                          },
+    {args: [complexObject,{DepthTest : 'sameValue'},4], expected: ['A.Example.DeeplyNested','C'] }
+  ];
+  tests.forEach(function(test) {
+    it(opDesciption(3,test.args,test.expected), function() {
+      var res = mitsuketa.locateAll(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('deepFilter(collection,identity)', function() {
+  var res1 = {
+      SamePropName     : 'SamePropName1',
+      OtherProperty    : ['One','Two','Three'],
+      AnotherProperty  : { type: 'test' },
+      DepthTest        : 'sameValue'
+  };
+  var res2 = { 
+      SamePropName     : 'SamePropName2',
+      OtherProperty    : ['x','y','z'],
+      DepthTest        : 'sameValue'
+  };
+  var tests = [
+    {args: [complexObject,2],                         expected: [{'name':'John Teage','id':2,'description':'this is a description WORLD'}] },
+    {args: [complexObject,'7'],                       expected: undefined                                                                  },
+    {args: [complexObject,{DepthTest : 'sameValue'}], expected: [res1,res2]                                                                }
+  ];
+  tests.forEach(function(test) {
+    it(opDesciption(2,test.args,test.expected), function() {
+      var res = mitsuketa.deepFilter(test.args[0],test.args[1]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('deepFilter(collection,identity,maxDepth)', function() {
+  var res1 = {
+      SamePropName     : 'SamePropName1',
+      OtherProperty    : ['One','Two','Three'],
+      AnotherProperty  : { type: 'test' },
+      DepthTest        : 'sameValue'
+  };
+  var res2 = { 
+      SamePropName     : 'SamePropName2',
+      OtherProperty    : ['x','y','z'],
+      DepthTest        : 'sameValue'
+  };
+  var tests = [
+    {args: [complexObject,2,2],                       expected: undefined                                                                  },
+    {args: [complexObject,2,4],                       expected: [{'name':'John Teage','id':2,'description':'this is a description WORLD'}] },
+    {args: [complexObject,'7',5],                     expected: undefined                                                                  },
+    {args: [complexObject,{DepthTest : 'sameValue'}], expected: [res1,res2]                                                                }
+  ];
+  tests.forEach(function(test) {
+    it(opDesciption(3,test.args,test.expected), function() {
+      var res = mitsuketa.deepFilter(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
 
 
 /**
