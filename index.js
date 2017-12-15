@@ -265,8 +265,8 @@ function exists(collection, identity, maxdepth=null){
  * @param {Any} identity
  * @return {Array || undefined} For positive matches returns a string array to the paths of the locations, otherwise undefined
  */
-function deepFilter(collection, identity, maxdepth=null){
-    var paths = locateAll(collection, identity);
+function deepFilter(collection, identity, maxDepth=null){
+    var paths = locateAll(collection, identity, maxDepth);
     if(paths === false) return undefined;
     const results = paths.map(path => {
         if(path === '') return collection;
@@ -286,9 +286,9 @@ function deepFilter(collection, identity, maxdepth=null){
  * @param {Any} identity
  * @return {Array || false} For positive matching returns an array of paths to the locations, otherwise false
  */
-function locateAll(collection, identity, maxdepth=null){
+function locateAll(collection, identity, maxDepth=null){
     var R = [];
-    function _locateAll(collection, identity, path = ''){
+    function _locateAll(collection, identity, path = '',maxDepth,currentDepth){
         if(isIterable(identity))
         if(sameType(collection,identity))
         if(containsKeys(collection,Object.keys(identity))){
@@ -297,13 +297,14 @@ function locateAll(collection, identity, maxdepth=null){
         }
         if(identical(collection,identity)) R[R.length] = path;
         var result = false;
+        if(maxDepth!==null)if(currentDepth>=maxDepth) return result;
         if(isIterable(collection))
         for(var i = 0, keys = Object.keys(collection), l = keys.length; i < l; i++ ){
             const key = keys[i], subcollection = collection[key];
-            _locateAll(subcollection,identity,(path === '' ? path : path + '.') + key);
+            _locateAll(subcollection,identity,(path === '' ? path : path + '.') + key,maxDepth,currentDepth + 1);
         }    
     }
-    _locateAll(collection, identity);
+    _locateAll(collection, identity, '', maxDepth, 0);
     return R.length === 0 ? false : R;
 }
 
@@ -313,8 +314,8 @@ function locateAll(collection, identity, maxdepth=null){
  * @param {Any} identity
  * @return {String || undefined} For positive match returns the path of the location as string, otherwise undefined
  */
-function deepGet(collection, identity, maxdepth=null){
-    var path = locate(collection, identity);
+function deepGet(collection, identity, maxDepth=null){
+    var path = locate(collection, identity, maxDepth);
     if(path === false) return undefined;
     if(path === '') return collection;
     path = path.split('.');
@@ -329,25 +330,32 @@ function deepGet(collection, identity, maxdepth=null){
  * Performs deep search on collection to find a match to the identity, will return the path of the first instance matched.
  * @param {Any} collection
  * @param {Any} identity
+ * @param {Optional number} maxDepth Defines how deep will the function go, before return with a result
  * @return {String || False} For positive match returns the path to location as string, otherwise false
  */
-function locate(collection, identity, path = '', maxdepth=null){
-    if(isIterable(identity))
-    if(sameType(collection,identity))
-    if(containsKeys(collection,Object.keys(identity))){
-        const trimmed = trim(collection,Object.keys(identity));
-        if(identical(trimmed,identity)) return path;
+function locate(collection, identity, maxDepth=null){
+    var R;
+    function _locate(collection, identity, path = '', maxDepth,currentDepth){
+        if(isIterable(identity))
+        if(sameType(collection,identity))
+        if(containsKeys(collection,Object.keys(identity))){
+            const trimmed = trim(collection,Object.keys(identity));
+            if(identical(trimmed,identity)) return path;
+        }
+        if(identical(collection,identity)) return path;
+        var result = false;
+        if(maxDepth!==null)if(currentDepth>=maxDepth) return result;
+
+        if(isIterable(collection))
+        for(var i = 0, keys = Object.keys(collection), l = keys.length; i < l; i++ ){
+            const 
+                key = keys[i], subcollection = collection[key],
+                res = _locate(subcollection,identity,key,maxDepth,currentDepth + 1);
+            if(res) { path = path === '' ? path : path + '.'; result = path + res; break; }
+        }    
+        return result;
     }
-    if(identical(collection,identity)) return path;
-    var result = false;
-    if(isIterable(collection))
-    for(var i = 0, keys = Object.keys(collection), l = keys.length; i < l; i++ ){
-        const 
-            key = keys[i], subcollection = collection[key],
-            res = locate(subcollection,identity,key);
-        if(res) { path = path === '' ? path : path + '.'; result = path + res; break; }
-    }    
-    return result;
+    return _locate(collection, identity,'', maxDepth,0);
 }
 
 /**
@@ -471,10 +479,10 @@ mitsuketa = {
     isIterable       : function(identity)                       { return isIterable(identity);                       },
     containsKeys     : function(identity,keyList)               { return containsKeys(identity,keyList);             },
     trim             : function(identity,keyList)               { return trim(identity,keyList);                     },
-    locate           : function(collection,identity)            { return locate(collection,identity);                },
-    deepGet          : function(collection,identity)            { return deepGet(collection,identity);               },
-    locateAll        : function(collection,identity)            { return locateAll(collection,identity);             },
-    deepFilter       : function(collection,identity)            { return deepFilter(collection,identity);            },
+    locate           : function(collection,identity,maxDepth)   { return locate(collection,identity,maxDepth);       },
+    deepGet          : function(collection,identity,maxDepth)   { return deepGet(collection,identity,maxDepth);      },
+    locateAll        : function(collection,identity,maxDepth)   { return locateAll(collection,identity,maxDepth);    },
+    deepFilter       : function(collection,identity,maxDepth)   { return deepFilter(collection,identity,maxDepth);   },
     exists           : function(collection,identity)            { return exists(collection,identity);                },
     onlyExisting     : function(collection,identities)          { return onlyExisting(collection,identities);        },
     onlyMissing      : function(collection,identities)          { return onlyMissing(collection,identities);         },
