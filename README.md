@@ -15,6 +15,10 @@ $ npm i --save mitsuketa
 
 Mitsuketa makes JavaScript easier by taking the hassle out of working with deeply nested data structures. Allows you to strict compare object, locate deeply nested entities, etc.
 
+## Last Release Notes
+
+*maxDepth* parameter is now supported for v1.1.x Features.
+
 ## Overview
 
 | Method   | Description                 | Parameters/Input  | Output  |
