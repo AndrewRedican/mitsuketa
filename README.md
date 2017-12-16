@@ -15,9 +15,12 @@ $ npm i --save mitsuketa
 
 Mitsuketa makes JavaScript easier by taking the hassle out of working with deeply nested data structures. Allows you to strict compare object, locate deeply nested entities, etc.
 
-## Last Release Notes
+## Lastest Release Notes
 
-*maxDepth* parameter is now supported for v1.1.x Features.
+1. *maxDepth* parameter is now supported for all functions.
+2. Now quality tests provide full coverage of this project. We intend it to keep it that way!
+3. Two new functions have been added that complements *maxDepth* parameter support. This will allow you do to more with it. See [*maxDepth*](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#maxdepth-identity--optionalmaxlayer-) and [*matchDepth*](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#matchdepth-collection--identity--optionalmaxdepth-).
+4. If you haven't checked it out already, you can learn more about how we [set up and execute tests](https://github.com/AndrewRedican/mitsuketa/wiki/How-to-Create-and-Run-Tests).
 
 ## Overview
 
@@ -45,6 +48,8 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 | [onlyTruthy](https://github.com/AndrewRedican/mitsuketa/wiki/v1.2.0#onlytruthy-collection-identities-property-optionaldepth--) | For each identity in `identities`, performs a deep search on `collection` using `exists`, and evaluates if `isTruthy` on the first identical match of `property` to shorten the list `identities` to those that were found and also truthy | collection, identities, property | identities |
 | [onlyFalsy](https://github.com/AndrewRedican/mitsuketa/wiki/v1.2.0#onlyfalsy-collection-identities-property-optionaldepth--)  | For each identity in `identities`, performs a deep search on `collection` using `exists`, and evaluates if `isFalsy` on the first identical match of `property` to shorten the list `identities` to those that were found and also truthy | collection, identities, property | identities |
 | [countMatches](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#countmatches-collection-identity-optionalnthdepth-optionalmaxdepth--)  | Performs deep search for `identity` on `collection` using `locateAll` and returns the number of confirmed matches in a given depth | collection, identity, number | number |
+| [maxDepth](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#maxdepth-identity--optionalmaxlayer-)  | Returns the nth value of the deepest layer of the entire object tree | identity | number |
+| [matchDepth](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#matchdepth-collection--identity--optionalmaxdepth-)  | Performs deep search for `identity` on `collectio`n to return the location's depth of the first match. If no match found, returns false. | collection, identity | number |
 
 ## Built With
 
