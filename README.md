@@ -49,7 +49,7 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 | [onlyFalsy](https://github.com/AndrewRedican/mitsuketa/wiki/v1.2.0#onlyfalsy-collection-identities-property-optionaldepth--)  | For each identity in `identities`, performs a deep search on `collection` using `exists`, and evaluates if `isFalsy` on the first identical match of `property` to shorten the list `identities` to those that were found and also truthy | collection, identities, property | identities |
 | [countMatches](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#countmatches-collection-identity-optionalnthdepth-optionalmaxdepth--)  | Performs deep search for `identity` on `collection` using `locateAll` and returns the number of confirmed matches in a given depth | collection, identity, number | number |
 | [maxDepth](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#maxdepth-identity--optionalmaxlayer-)  | Returns the nth value of the deepest layer of the entire object tree | identity | number |
-| [matchDepth](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#matchdepth-collection--identity--optionalmaxdepth-)  | Performs deep search for `identity` on `collectio`n to return the location's depth of the first match. If no match found, returns false. | collection, identity | number |
+| [matchDepth](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#matchdepth-collection--identity--optionalmaxdepth-)  | Performs deep search for `identity` on `collection` to return the location's depth of the first match. If no match found, returns false. | collection, identity | number |
 
 ## Built With
 
