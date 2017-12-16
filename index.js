@@ -2,23 +2,72 @@
  * @author Andrew Redican <andrew.redican.mejia@gmail.com>
  */
 
+
 /**
- * Performs deep search for identity on collection, returns the number of matches found by in a specific depth.
- * If depth not provided, it will return the total number of matches including all depths.
+ * Performs deep search for identity on collection to return the location's depth of the first match. If no match found, returns false.
  * @param {Any} collection
  * @param {Any} identity
- * @param { Null || number } depth
+ * @param {Optional Number} maxDepth
+ * @return {boolean}
+ */
+function matchDepth(collection,identity,maxDepth=null){
+    var path = locate(collection, identity, maxDepth);
+    if(path === false) return false;
+    if(path === '') return 0;
+    path = path.split('.');
+    return path.length;
+}
+
+/**
+ * Walks through the entire object tree to return the maximum number of layers it contains.
+ * @param {Any} identity
+ * @param {Optional Number} maxDepth
+ */
+function maxDepth(identity,maxLayer=null){
+    let R = 0;
+    function _maxDepth(identity,maxLayer,currentDepth=0){
+        if(R < currentDepth) R = currentDepth; 
+        if(maxLayer!==null) if(currentDepth >= maxLayer) return;
+        if(isIterable(identity)){
+            var keys = Object.keys(identity);
+            keys.forEach( key => {
+                var subIdentity = identity[key];
+                _maxDepth(subIdentity,maxLayer,currentDepth + 1);
+            });
+        }
+    }
+    _maxDepth(identity,maxLayer);
+    return R;
+}
+
+/**
+ * Performs deep search for identity on collection, returns the number of matches found.
+ * @param {Any} collection
+ * @param {Any} identity
+ * @param {Number} nthDepth
+ * @param {Optional Number} maxDepth
  * @return {Any} Returns number of matches found.
  */
-function countMatches(collection, identity, depth=null){
-    var paths = locateAll(collection, identity);
+function countMatches(collection,identity,nthDepth=null,maxDepth=null){
+    var 
+        depth,
+        nthDepth_isNull = nthDepth === null,
+        maxDepth_isNull = maxDepth === null;
+    if(nthDepth_isNull && maxDepth_isNull) 
+        depth = null;
+    else
+        if(!nthDepth_isNull && !maxDepth_isNull)
+            if(nthDepth < maxDepth) depth = nthDepth; else depth = maxDepth;
+        else
+            if(nthDepth) depth = nthDepth; else depth = maxDepth;
+    var paths = locateAll(collection,identity,depth);
     if(paths===false) return 0;
-    if(option===null) return paths.length;
-    if(getType(option)==='number'){
+    if(nthDepth===null) return paths.length;
+    if(getType(nthDepth)==='number'){
         let count = 0;
         paths.forEach( path => { 
             path = path.split('.');
-            if(path.length===option) count++;
+            if(path.length===nthDepth) count++;
         });
         return count;
     }
@@ -30,15 +79,16 @@ function countMatches(collection, identity, depth=null){
  * @param {Any} collection
  * @param {Any} identities
  * @param {Any} property
+ * @param {Optional Number} maxDepth
  * @return {Any} Returns a collection of the same type as the 'identities' parameter provided with only the identities that matched.
  */
-function onlyFalsy(collection,identities,property, maxdepth=null){
+function onlyFalsy(collection,identities,property,maxDepth=null){
     if(getType(identities)==='array'){
         let result = [];
         identities.forEach( identity => { 
             const subCollection = deepFilter(collection,identity);
             if(isTruthy(subCollection))
-            if(foundFalsy(subCollection,property)) result.push(identity);
+            if(foundFalsy(subCollection,property,maxDepth)) result.push(identity);
         });
         return result;
     }
@@ -49,34 +99,36 @@ function onlyFalsy(collection,identities,property, maxdepth=null){
                 identity = identities[key],
                 subCollection = deepFilter(collection,identity);
             if(isTruthy(subCollection))
-            if(foundFalsy(subCollection,property)) result[key] = identity;
+            if(foundFalsy(subCollection,property,maxDepth)) result[key] = identity;
         });
         return result;
     }
-    if(foundFalsy(collection,property)) return identities;
+    if(foundFalsy(collection,property,maxDepth)) return identities;
 }
 
 /**
  * Performs deep search on collection to find any match to the property and evalutates if truthy
  * @param {Any} collection
  * @param {Property} identity
+ * @param {Optional Number} maxDepth
  * @return {boolean} If match confirmed and truthy will return true, otherwise false
  */
-function foundFalsy(collection,identity, maxdepth=null){
+function foundFalsy(collection,identity,maxDepth=null){
     identity = singleProperty(identity);
     if(isFalsy(identity)) return undefined;
-    function _foundFalsy(collection, identity){
+    function _foundFalsy(collection,identity,maxDepth,currentDepth=0){
         if(containsKeys(collection,[identity])) return isFalsy(collection[identity]);
+        if(maxDepth!==null) if(currentDepth >= maxDepth) return false;
         if(isIterable(collection))
         for(var i = 0, keys = Object.keys(collection), l = keys.length; i < l; i++ ){
             const 
                 key = keys[i], subcollection = collection[key],
-                res = _foundFalsy(subcollection,identity);
+                res = _foundFalsy(subcollection,identity,maxDepth,currentDepth + 1);
             if(res) return true;
         }
         return false;
     }
-    return _foundFalsy(collection, identity);
+    return _foundFalsy(collection,identity,maxDepth);
 }
 
 /**
@@ -84,15 +136,16 @@ function foundFalsy(collection,identity, maxdepth=null){
  * @param {Any} collection
  * @param {Any} identities
  * @param {Any} property
+ * @param {Optional Number} maxDepth
  * @return {Any} Returns a collection of the same type as the 'identities' parameter provided with only the identities that matched.
  */
-function onlyTruthy(collection,identities,property, maxdepth=null){
+function onlyTruthy(collection,identities,property,maxDepth=null){
     if(getType(identities)==='array'){
         let result = [];
         identities.forEach( identity => { 
             const subCollection = deepFilter(collection,identity);
             if(isTruthy(subCollection))
-            if(foundTruthy(subCollection,property)) result.push(identity);
+            if(foundTruthy(subCollection,property,maxDepth)) result.push(identity);
         });
         return result;
     }
@@ -103,34 +156,36 @@ function onlyTruthy(collection,identities,property, maxdepth=null){
                 identity = identities[key],
                 subCollection = deepFilter(collection,identity);
             if(isTruthy(subCollection))
-            if(foundTruthy(subCollection,property)) result[key] = identity;
+            if(foundTruthy(subCollection,property,maxDepth)) result[key] = identity;
         });
         return result;
     }
-    if(foundTruthy(collection,property)) return identities;
+    if(foundTruthy(collection,property,maxDepth)) return identities;
 }
 
 /**
  * Performs deep search on collection to find any match to the property and evalutates if truthy
  * @param {Any} collection
  * @param {Property} identity
+ * @param {Optional Number} maxDepth
  * @return {boolean} If match confirmed and truthy will return true, otherwise false
  */
-function foundTruthy(collection,identity, maxdepth=null){
+function foundTruthy(collection,identity,maxDepth=null){
     identity = singleProperty(identity);
     if(isFalsy(identity)) return undefined;
-    function _foundTruthy(collection, identity){
+    function _foundTruthy(collection,identity,maxDepth,currentDepth=0){
         if(containsKeys(collection,[identity])) return isTruthy(collection[identity]);
+        if(maxDepth!==null) if(currentDepth >= maxDepth) return false;
         if(isIterable(collection))
         for(var i = 0, keys = Object.keys(collection), l = keys.length; i < l; i++ ){
             const 
                 key = keys[i], subcollection = collection[key],
-                res = _foundTruthy(subcollection,identity);
+                res = _foundTruthy(subcollection,identity,maxDepth,currentDepth + 1);
             if(res) return true;
         }
         return false;
     }
-    return _foundTruthy(collection, identity);
+    return _foundTruthy(collection,identity,maxDepth,0);
 }
 
 /**
@@ -189,13 +244,14 @@ function length(identity){
  * Performs deep search for each identity on collection, to shorten the identities to those that does meets the match criteria
  * @param {Any} collection
  * @param {Any} identities
+ * @param {Optional Number} maxDepth
  * @return {Any} Returns a collection of the same type as the 'identities' parameter provided with only the identities that were not matched.
  */
-function onlyMissing(collection,identities, maxdepth=null){
+function onlyMissing(collection,identities,maxDepth=null){
     if(getType(identities)==='array'){
         let result = [];
         identities.forEach( identity => { 
-            if(!exists(collection,identity)) result.push(identity);
+            if(!exists(collection,identity,maxDepth)) result.push(identity);
         });
         return result;
     }
@@ -203,24 +259,25 @@ function onlyMissing(collection,identities, maxdepth=null){
         let result = {};
         Object.keys(identities).forEach( key => {
             let identity = identities[key]; 
-            if(!exists(collection,identity)) result[key] = identity;
+            if(!exists(collection,identity,maxDepth)) result[key] = identity;
         });
         return result;
     }
-    if(!exists(collection,identities)) return identities;
+    if(!exists(collection,identities,maxDepth)) return identities;
 }
 
 /**
  * Performs deep search for each identity on collection, to shorten the identities to those that meets the match criteria
  * @param {Any} collection
  * @param {Any} identities
+ * @param {Optional Number} maxDepth
  * @return {Any} Returns a collection of the same type as the 'identities' parameter provided with only the identities that matched.
  */
-function onlyExisting(collection,identities, maxdepth=null){
+function onlyExisting(collection,identities,maxDepth=null){
     if(getType(identities)==='array'){
         let result = [];
         identities.forEach( identity => { 
-            if(exists(collection,identity)) result.push(identity);
+            if(exists(collection,identity,maxDepth)) result.push(identity);
         });
         return result;
     }
@@ -228,20 +285,21 @@ function onlyExisting(collection,identities, maxdepth=null){
         let result = {};
         Object.keys(identities).forEach( key => {
             let identity = identities[key]; 
-            if(exists(collection,identity)) result[key] = identity;
+            if(exists(collection,identity,maxDepth)) result[key] = identity;
         });
         return result;
     }
-    if(exists(collection,identities)) return identities;
+    if(exists(collection,identities,maxDepth)) return identities;
 }
 
 /**
  * Performs deep search on collection to find any match to the identity
  * @param {Any} collection
  * @param {Any} identity
+ * @param {Optional Number} maxDepth
  * @return {boolean} If a match is confirmed will return true, otherwise false
  */
-function exists(collection, identity, maxdepth=null){
+function exists(collection, identity, maxDepth=null, currentDepth=0){
     if(identical(collection,identity)) return true;
     if(isIterable(identity))
     if(sameType(collection,identity))
@@ -249,11 +307,12 @@ function exists(collection, identity, maxdepth=null){
         const trimmed = trim(collection,Object.keys(identity));
         if(identical(trimmed,identity)) return true;
     }
+    if(maxDepth === null ? true: (currentDepth < maxDepth))
     if(isIterable(collection))
     for(var i = 0, keys = Object.keys(collection), l = keys.length; i < l; i++ ){
         const 
             key = keys[i], subcollection = collection[key],
-            res = exists(subcollection,identity);
+            res = exists(subcollection,identity,maxDepth,currentDepth + 1);
         if(res) return true;
     }
     return false;
@@ -263,6 +322,7 @@ function exists(collection, identity, maxdepth=null){
  * Performs deep search on collection to find all matches to the identity, will return the entity containing the matched instances.
  * @param {Any} collection
  * @param {Any} identity
+ * @param {Optional Number} maxDepth
  * @return {Array || undefined} For positive matches returns a string array to the paths of the locations, otherwise undefined
  */
 function deepFilter(collection, identity, maxDepth=null){
@@ -284,6 +344,7 @@ function deepFilter(collection, identity, maxDepth=null){
  * Performs deep search on collection to find all matches to the identity, returns a string array.
  * @param {Any} collection
  * @param {Any} identity
+ * @param {Optional Number} maxDepth
  * @return {Array || false} For positive matching returns an array of paths to the locations, otherwise false
  */
 function locateAll(collection, identity, maxDepth=null){
@@ -312,6 +373,7 @@ function locateAll(collection, identity, maxDepth=null){
  * Performs deep search on collection to find a match to the identity, will return the entity containing of the first instance matched.
  * @param {Any} collection
  * @param {Any} identity
+ * @param {Optional Number} maxDepth
  * @return {String || undefined} For positive match returns the path of the location as string, otherwise undefined
  */
 function deepGet(collection, identity, maxDepth=null){
@@ -472,27 +534,30 @@ function getType(identity) {
 }
 
 mitsuketa = {
-    getType          : function(identity)                       { return getType(identity);                          }, 
-    sameType         : function(identityA,identityB)            { return sameType(identityA,identityB);              },
-    sameStructure    : function(identityA,identityB)            { return sameStructure(identityA,identityB);         },
-    identical        : function(identityA,identityB)            { return identical(identityA,identityB);             },
-    isIterable       : function(identity)                       { return isIterable(identity);                       },
-    containsKeys     : function(identity,keyList)               { return containsKeys(identity,keyList);             },
-    trim             : function(identity,keyList)               { return trim(identity,keyList);                     },
-    locate           : function(collection,identity,maxDepth)   { return locate(collection,identity,maxDepth);       },
-    deepGet          : function(collection,identity,maxDepth)   { return deepGet(collection,identity,maxDepth);      },
-    locateAll        : function(collection,identity,maxDepth)   { return locateAll(collection,identity,maxDepth);    },
-    deepFilter       : function(collection,identity,maxDepth)   { return deepFilter(collection,identity,maxDepth);   },
-    exists           : function(collection,identity)            { return exists(collection,identity);                },
-    onlyExisting     : function(collection,identities)          { return onlyExisting(collection,identities);        },
-    onlyMissing      : function(collection,identities)          { return onlyMissing(collection,identities);         },
-    length           : function(identity)                       { return length(identity);                           },
-    isFalsy          : function(identity)                       { return isFalsy(identity);                          },
-    isTruthy         : function(identity)                       { return isTruthy(identity);                         },
-    foundTruthy      : function(collection,identity)            { return foundTruthy(collection,identity);           },
-    onlyTruthy       : function(collection,identities,property) { return onlyTruthy(collection,identities,property); },
-    foundFalsy       : function(collection,identity)            { return foundFalsy(collection,identity);            },
-    onlyFalsy        : function(collection,identities,property) { return onlyFalsy(collection,identities,property);  }
+    getType          : function(identity)                                { return getType(identity);                                   }, 
+    sameType         : function(identityA,identityB)                     { return sameType(identityA,identityB);                       },
+    sameStructure    : function(identityA,identityB)                     { return sameStructure(identityA,identityB);                  },
+    identical        : function(identityA,identityB)                     { return identical(identityA,identityB);                      },
+    isIterable       : function(identity)                                { return isIterable(identity);                                },
+    containsKeys     : function(identity,keyList)                        { return containsKeys(identity,keyList);                      },
+    trim             : function(identity,keyList)                        { return trim(identity,keyList);                              },
+    locate           : function(collection,identity,maxDepth)            { return locate(collection,identity,maxDepth);                },
+    deepGet          : function(collection,identity,maxDepth)            { return deepGet(collection,identity,maxDepth);               },
+    locateAll        : function(collection,identity,maxDepth)            { return locateAll(collection,identity,maxDepth);             },
+    deepFilter       : function(collection,identity,maxDepth)            { return deepFilter(collection,identity,maxDepth);            },
+    exists           : function(collection,identity,maxDepth)            { return exists(collection,identity,maxDepth);                },
+    onlyExisting     : function(collection,identities,maxDepth)          { return onlyExisting(collection,identities,maxDepth);        },
+    onlyMissing      : function(collection,identities,maxDepth)          { return onlyMissing(collection,identities,maxDepth);         },
+    length           : function(identity)                                { return length(identity);                                    },
+    isFalsy          : function(identity)                                { return isFalsy(identity);                                   },
+    isTruthy         : function(identity)                                { return isTruthy(identity);                                  },
+    foundTruthy      : function(collection,identity,maxDepth)            { return foundTruthy(collection,identity,maxDepth);           },
+    onlyTruthy       : function(collection,identities,property,maxDepth) { return onlyTruthy(collection,identities,property,maxDepth); },
+    foundFalsy       : function(collection,identity,maxDepth)            { return foundFalsy(collection,identity,maxDepth);            },
+    onlyFalsy        : function(collection,identities,property,maxDepth) { return onlyFalsy(collection,identities,property,maxDepth);  },
+    countMatches     : function(collection,identity,nthDepth,maxDepth)   { return countMatches(collection,identity,nthDepth,maxDepth); },
+    matchDepth       : function(collection,identity,maxDepth)            { return matchDepth(collection,identity,maxDepth);            },
+    maxDepth         : function(identity,maxLayer)                       { return maxDepth(identity,maxLayer);                         }
 }
 
 module.exports = exports = mitsuketa;
