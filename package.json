@@ -1,6 +1,6 @@
 {
   "name": "mitsuketa",
-  "version": "1.3.2",
+  "version": "1.3.4",
   "description": "A Javascript library that enables you to handle deeply nested objects easily.",
   "main": "index.js",
   "scripts": {
