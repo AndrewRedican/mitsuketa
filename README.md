@@ -57,7 +57,7 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 
 ## Built With
 
-* Vanilla Javascript, ES5, ES6
+* Vanilla [**Javascript**](https://betterexplained.com/articles/the-single-page-javascript-overview/), ES5, [**ES6**](http://es6-features.org/#Constants)
 
 ## Authors
 
