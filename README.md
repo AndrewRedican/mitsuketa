@@ -53,6 +53,9 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 | [deepGet_Key](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#deepget_key-collection--keyname--optionalmaxdepth-) | Uses `locate_Key` and returns the `indentity`'s container if found in `collection` | collection, key | identity |
 | [locateAll_Key](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#locateall_key-collection--keyname--optionalmaxdepth-) | Uses `locate_Key` and returns all the paths to all matches | collection, key | array of string |
 | [deepFilter_Key](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#deepfilter_key-collection--keyname--optionalmaxdepth-) | Uses `locateAll` and returns an array of all an identites matched inside `collection`  | collection, key | array of identities |
+| [deepClone](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#deepclone-identity--optionalmaxdepth--optionalstartdepth---) | Creates a non-reference clone that is an exact copy to the identity provided. Can be used to create `shallow clones` of specific depths. Can also be used to create `branch clones`. Read more in [**documentation**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#deepclone-identity--optionalmaxdepth--optionalstartdepth---) | collection, key | any |
+| [renameKey](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#renamekey-identity--keyname--newkeyname--optionalmaxdepth-) | Performs deep search on the `identity`'s object tree to rename the first matching key.  | identity, key, key | identity |
+| [renameKeys](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#renamekeys-identity--keyname--newkeyname--optionalmaxdepth-) | Performs deep search on the `identity`'s object tree to rename all matching keys.  | identity, key, key | identity |
 
 
 ## Built With
