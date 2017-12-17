@@ -18,7 +18,7 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 ## Lastest Release Notes
 
 1. `locate()`, `deepGet()`, `locateAll()`, `deepFilter()` functions now have a counterpart each that supports deep search by `key` or `property name`. Check them out! [**locate_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#locate_key-collection--keyname--optionalmaxdepth-), [**deepGet_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#deepget_key-collection--keyname--optionalmaxdepth-), [**locateAll_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#locateall_key-collection--keyname--optionalmaxdepth-), [**deepFilter_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#deepfilter_key-collection--keyname--optionalmaxdepth-)
-2. Most of the features so far have focused on obtaining data from complex object trees. Now we are taking an exiting new focus on actual **deeply nested object manipulation**. Check out our [**project board**](https://github.com/AndrewRedican/mitsuketa/projects/1) for a sneak peek to the new features. Feel free suggest any feature that you'd like to see by answering the survey down below.
+2. Most of the features so far have focused on obtaining data from complex object trees. Now we are taking an exciting new focus on actual **deeply nested object manipulation**. Check out our [**project board**](https://github.com/AndrewRedican/mitsuketa/projects/1) for a sneak peek to the new features. Feel free suggest any feature that you'd like to see by answering the survey down below.
 3. If you haven't checked it out already, you can learn more about how we [set up and execute tests](https://github.com/AndrewRedican/mitsuketa/wiki/How-to-Create-and-Run-Tests).
 
 ## Overview
