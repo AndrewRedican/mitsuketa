@@ -17,14 +17,13 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 
 ## Lastest Release Notes
 
-1. *maxDepth* parameter is now supported for all functions.
-2. Now quality tests provide full coverage of this project. We intend it to keep it that way!
-3. Two new functions have been added that complements *maxDepth* parameter support. This will allow you do to more with it. See [*maxDepth*](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#maxdepth-identity--optionalmaxlayer-) and [*matchDepth*](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#matchdepth-collection--identity--optionalmaxdepth-).
-4. If you haven't checked it out already, you can learn more about how we [set up and execute tests](https://github.com/AndrewRedican/mitsuketa/wiki/How-to-Create-and-Run-Tests).
+1. `locate()`, `deepGet()`, `locateAll()`, `deepFilter()` functions now have a counterpart each that supports deep search by `key` or `property name`. Check them out! [**locate_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#locate_key-collection--keyname--optionalmaxdepth-), [**deepGet_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#deepget_key-collection--keyname--optionalmaxdepth-), [**locateAll_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#locateall_key-collection--keyname--optionalmaxdepth-), [**deepFilter_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#deepfilter_key-collection--keyname--optionalmaxdepth-)
+2. Most of the features so far have focused on obtaining data from complex object trees. Now we are taking an exiting new focus on actual **deeply nested object manipulation**. Check out our [**project board**](https://github.com/AndrewRedican/mitsuketa/projects/1) for a sneak peek to the new features. Feel free suggest any feature that you'd like to see by answering the survey down below.
+3. If you haven't checked it out already, you can learn more about how we [set up and execute tests](https://github.com/AndrewRedican/mitsuketa/wiki/How-to-Create-and-Run-Tests).
 
 ## Overview
 
-| Method   | Description                 | Parameters/Input  | Output  |
+| Method   | Brief Description | Parameters/Input  | Output  |
 | ------------- |-----------------------------| ------| :-----:|
 | [getType](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#gettype-identity-) | Gets `typeof` `identity` also makes distinction between `object`, `null`, and `array`               | identity | string |
 | [sameType](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#sametype-identitya-identityb-) | Compares two `identities` using `getType` method | identityA, identityB | `identity` or `false` |
@@ -36,7 +35,7 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 | [locate](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#locate-collection-identity-optionaldepth--) | Performs a deep search by iterating through the `collection`'s entire object tree an returns the path to the first `identical` match that is found as a string of dot . separated property names | collection, identity | string |
 | [deepGet](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#deepget-collection-identity-optionaldepth--) | Uses `locate` and returns the `indentity`'s container if found in `collection` |    collection, identity | identity |
 | [locateAll](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#locateall-collection-identity-optionaldepth--) | Uses `locate` and returns all the paths to all matches | collection, identity | array of string |
-| [deepFilter](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#deepfilter-collection-identity-optionaldepth-) | Users `locateAll` and returns an array of all an identites matched inside `collection`  | collection, identity | array of identities |
+| [deepFilter](https://github.com/AndrewRedican/mitsuketa/wiki/v1.1.0#deepfilter-collection-identity-optionaldepth-) | Uses `locateAll` and returns an array of all an identites matched inside `collection`  | collection, identity | array of identities |
 | [length](https://github.com/AndrewRedican/mitsuketa/wiki/v1.2.0#length-identity-) | Returns the number of keys or properties contained in `identity` | identity | number |
 | [exists](https://github.com/AndrewRedican/mitsuketa/wiki/v1.2.0#exists-collection-identity-optionaldepth--) | Performs deep search on `collection` for an `identical` match to `identity` | collection, identity | boolean |
 | [onlyExisting](https://github.com/AndrewRedican/mitsuketa/wiki/v1.2.0#onlyexisting-collection-identities-optionaldepth--) | For each identity in `identities`, performs a deep search on `collection` using `exists`, to shorten the list `identities` to those that were found | collection, identities | identities |
@@ -50,6 +49,11 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 | [countMatches](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#countmatches-collection-identity-optionalnthdepth-optionalmaxdepth--)  | Performs deep search for `identity` on `collection` using `locateAll` and returns the number of confirmed matches in a given depth | collection, identity, number | number |
 | [maxDepth](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#maxdepth-identity--optionalmaxlayer-)  | Returns the nth value of the deepest layer of the entire object tree | identity | number |
 | [matchDepth](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#matchdepth-collection--identity--optionalmaxdepth-)  | Performs deep search for `identity` on `collection` to return the location's depth of the first match. If no match found, returns false. | collection, identity | number |
+| [locate_Key](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#locate_key-collection--keyname--optionalmaxdepth-) | Performs a deep search by iterating through the `collection`'s entire object tree an returns the path to the first `identical` match that is found as a string of dot . separated property names | collection, key | string |
+| [deepGet_Key](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#deepget_key-collection--keyname--optionalmaxdepth-) | Uses `locate_Key` and returns the `indentity`'s container if found in `collection` | collection, key | identity |
+| [locateAll_Key](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#locateall_key-collection--keyname--optionalmaxdepth-) | Uses `locate_Key` and returns all the paths to all matches | collection, key | array of string |
+| [deepFilter_Key](https://github.com/AndrewRedican/mitsuketa/wiki/v1.3.x#deepfilter_key-collection--keyname--optionalmaxdepth-) | Uses `locateAll` and returns an array of all an identites matched inside `collection`  | collection, key | array of identities |
+
 
 ## Built With
 
