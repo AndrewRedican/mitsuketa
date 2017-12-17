@@ -1020,3 +1020,127 @@ describe('matchDepth(collection,identity,maxDepth)', function() {
     });
   });
 });
+
+/**
+ * 
+ *  VERSION 2.0 FEATURES
+ * 
+ */
+
+
+describe('locate_Key(collection,identity)', function() {
+  var tests = [
+    {args: [bicycles,'date_sold'],           expected: '0.sales' },
+    {args: [bicycles,'date'],                expected: '0.sales.sale_opportunities.0' },
+    {args: [bicycles,'silver'],              expected: false },
+    {args: [bicycles,{name: "Jane O'Neil"}], expected: undefined }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(2,test.args,test.expected), function() {
+      var res = mitsuketa.locate_Key(test.args[0],test.args[1]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('locate_Key(collection,identity,maxDepth)', function() {
+  var tests = [
+    {args: [bicycles,'date',5], expected: '0.sales.sale_opportunities.0' },
+    {args: [bicycles,'date',4], expected: false                          },
+    {args: [bicycles,'date',3], expected: false                          }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(3,test.args,test.expected), function() {
+      var res = mitsuketa.locate_Key(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('deepGet_Key(collection,keyName)', function() {
+  var tests = [
+    {args: [bicycles,'date'],                expected: 'Dec 19, 2017' },
+    {args: [bicycles,'silver'],              expected: undefined      },
+    {args: [bicycles,{name: "Jane O'Neil"}], expected: undefined      },
+    {args: [bicycles,'type'],                expected: 'racing'       }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(2,test.args,test.expected), function() {
+      var res = mitsuketa.deepGet_Key(test.args[0],test.args[1]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('deepGet_Key(collection,keyName,maxDepth)', function() {
+  var tests = [
+    {args: [bicycles,'date',5], expected: 'Dec 19, 2017' },
+    {args: [bicycles,'date',4], expected: undefined      },
+    {args: [bicycles,'date',3], expected: undefined      }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(3,test.args,test.expected), function() {
+      var res = mitsuketa.deepGet_Key(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('locateAll_Key(collection,keyName)', function() {
+  var res1 = ['0.sales.sale_opportunities.0','0.sales.sale_opportunities.1','1.sales.sale_opportunities.0','1.sales.sale_opportunities.1'];
+  var tests = [
+    {args: [bicycles,'date'], expected: res1 },
+    {args: [bicycles,'maker'], expected: ['0','1','2','3']  }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(2,test.args,test.expected), function() {
+      var res = mitsuketa.locateAll_Key(test.args[0],test.args[1]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('locateAll_Key(collection,keyName,maxDepth)', function() {
+  var res1 = ['0.sales.sale_opportunities.0','0.sales.sale_opportunities.1','1.sales.sale_opportunities.0','1.sales.sale_opportunities.1'];
+  var tests = [
+    {args: [bicycles,'maker',2], expected: ['0','1','2','3']  },
+    {args: [bicycles,'maker',1], expected: false              },
+    {args: [bicycles,'date',5],  expected: res1               },
+    {args: [bicycles,'date',4],  expected: false              }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(3,test.args,test.expected), function() {
+      var res = mitsuketa.locateAll_Key(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('deepFilter_Key(collection,keyName)', function() {
+  var tests = [
+    {args: [bicycles,'date'],   expected: ['Dec 19, 2017','Dec 4, 2017','','']                },
+    {args: [bicycles,'maker'],  expected: ['breez TM','hyperwheel','hyperwheel','hyperwheel'] }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(2,test.args,test.expected), function() {
+      var res = mitsuketa.deepFilter_Key(test.args[0],test.args[1]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('deepFilter_Key(collection,keyName,maxDepth)', function() {
+  var res1 = ['0.sales.sale_opportunities.0','0.sales.sale_opportunities.1','1.sales.sale_opportunities.0','1.sales.sale_opportunities.1'];
+  var tests = [
+    {args: [bicycles,'maker',2], expected: ['breez TM','hyperwheel','hyperwheel','hyperwheel'] },
+    {args: [bicycles,'maker',1], expected: undefined                                           },
+    {args: [bicycles,'date',5],  expected: ['Dec 19, 2017','Dec 4, 2017','','']                },
+    {args: [bicycles,'date',4],  expected: undefined                                           }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(3,test.args,test.expected), function() {
+      var res = mitsuketa.deepFilter_Key(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
