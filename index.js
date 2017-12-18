@@ -3,6 +3,155 @@
  */
 
 /**
+ * Performs deep search on object tree, and renames the all matching keys
+ * @param {Any} identity
+ * @param {string} keyName
+ * @param {string} newKeyName
+ * @param {Optional Number} maxDepth
+ */
+function renameKeys(identity,keyName,newKeyName,maxDepth=null){
+    if(getType(keyName)!=='string') return undefined;
+    if(getType(newKeyName)!=='string') return undefined;
+    function _renameKeys(identity,keyName,newKeyName,maxDepth,currentDepth=0){
+        let keys;
+        switch(getType(identity)){
+            case 'array': 
+                var Arr     = [];
+                keys        = Object.keys(identity);
+                for(var i = 0, l = keys.length; i < l; i++){
+                    let
+                        key         = keys[i],
+                        subIdentity = identity[key];
+                    Arr[key] = _renameKeys(subIdentity,keyName,newKeyName,maxDepth,currentDepth + 1);
+                }
+                return Arr;
+            case 'object': 
+                var Obj     = {};
+                keys        = Object.keys(identity);
+                for(var i = 0, l = keys.length; i < l; i++){
+                    let
+                        key         = keys[i],
+                        subIdentity = identity[key];
+                    if( maxDepth !== null ? currentDepth < maxDepth : true)
+                    if(key===keyName) key = newKeyName;
+                    Obj[key] = _renameKeys(subIdentity,keyName,newKeyName,maxDepth,currentDepth + 1);
+                }
+                return Obj;
+            case 'string': return '' + identity;
+            case 'number': return 0 + identity;
+            case 'boolean': if(identity) return true; return false;
+            case 'null': return null;
+            case 'undefined': return undefined;
+        }
+    }
+    return _renameKeys(identity,keyName,newKeyName,maxDepth,0);
+}
+
+/**
+ * Performs deep search on object tree, then renames the first matching key
+ * @param {Any} identity
+ * @param {string} keyName
+ * @param {string} newKeyName
+ * @param {Optional Number} maxDepth
+ */
+function renameKey(identity,keyName,newKeyName,maxDepth=null){
+    if(getType(keyName)!=='string') return undefined;
+    if(getType(newKeyName)!=='string') return undefined;
+    var applied=false;
+    function _renameKey(identity,keyName,newKeyName,maxDepth,currentDepth=0){
+        let keys;
+        switch(getType(identity)){
+            case 'array': 
+                var Arr     = [];
+                keys        = Object.keys(identity);
+                for(var i = 0, l = keys.length; i < l; i++){
+                    let
+                        key         = keys[i],
+                        subIdentity = identity[key];
+                    Arr[key] = _renameKey(subIdentity,keyName,newKeyName,maxDepth,currentDepth + 1);
+                }
+                return Arr;
+            case 'object': 
+                var Obj     = {};
+                keys        = Object.keys(identity);
+                for(var i = 0, l = keys.length; i < l; i++){
+                    let
+                        key         = keys[i],
+                        subIdentity = identity[key];
+                    if( maxDepth !== null ? currentDepth < maxDepth : true)
+                    if(!applied)
+                    if(key===keyName){ key = newKeyName; applied = true; }
+                    Obj[key] = _renameKey(subIdentity,keyName,newKeyName,maxDepth,currentDepth + 1);
+                }
+                return Obj;
+            case 'string': return '' + identity;
+            case 'number': return 0 + identity;
+            case 'boolean': if(identity) return true; return false;
+            case 'null': return null;
+            case 'undefined': return undefined;
+        }
+    }
+    return _renameKey(identity,keyName,newKeyName,maxDepth,0);
+}
+
+/**
+ * Creates a non-reference clone that is an exact copy to the identity provided.
+ * @param {Any} identity
+ * @param {Optional Number} maxDepth
+ * @param {Optional Number} startDepth
+ * @return {Any} identity
+ */
+function deepClone(identity,maxDepth=null,startDepth=null){
+    var R = [];
+    function _deepClone(identity,maxDepth,startDepth,currentDepth=0){
+        let keys;
+        if( startDepth !== null ? currentDepth < startDepth : false){
+            if(isIterable(identity)){
+                keys = Object.keys(identity);
+                keys.forEach( key => { _deepClone(identity[key],maxDepth,startDepth,currentDepth + 1); });   
+            }
+            return;
+        }
+        if( startDepth !== null ? currentDepth == startDepth : false){
+            if(startDepth==0){ R = _deepClone(identity,maxDepth,null,currentDepth); return; }
+            if(isIterable(identity)) R.push(_deepClone(identity,maxDepth,startDepth,currentDepth + 1));
+            return;
+        }
+        switch(getType(identity)){
+            case 'array': 
+                var Arr     = [];
+                keys        = Object.keys(identity);
+                if( maxDepth !== null ? currentDepth < maxDepth : true)
+                for(var i = 0, l = keys.length; i < l; i++){
+                    const
+                        key         = keys[i],
+                        subIdentity = identity[key];
+                    Arr[key] = _deepClone(subIdentity,maxDepth,startDepth,currentDepth + 1);
+                }
+                return Arr;
+            case 'object': 
+                var Obj     = {};
+                keys        = Object.keys(identity);
+                if( maxDepth !== null ? currentDepth < maxDepth : true)
+                for(var i = 0, l = keys.length; i < l; i++){
+                    const
+                        key         = keys[i],
+                        subIdentity = identity[key];
+                    Obj[key] = _deepClone(subIdentity,maxDepth,startDepth,currentDepth + 1);
+                }
+                return Obj;
+            case 'string': return '' + identity;
+            case 'number': return 0 + identity;
+            case 'boolean': if(identity) return true; return false;
+            case 'null': return null;
+            case 'undefined': return undefined;
+        }
+    }
+    if(startDepth === null) return _deepClone(identity,maxDepth,startDepth,0);
+    _deepClone(identity,maxDepth,startDepth,0); return R;
+}
+
+/**
  * Performs deep search on collection to find all matches to the key name, and returns a list of identities containing the matched instances. If no matches found, it returns `undefined`.
  * @param {Any} collection
  * @param {Any} keyName
@@ -664,7 +813,10 @@ mitsuketa = {
     locate_Key         : function(collection,keyName,maxDepth)                       { return locate_Key(collection,keyName,maxDepth);                               },
     deepGet_Key        : function(collection,keyName,maxDepth)                       { return deepGet_Key(collection,keyName,maxDepth);                              },
     locateAll_Key      : function(collection,keyName,maxDepth)                       { return locateAll_Key(collection,keyName,maxDepth);                            },
-    deepFilter_Key     : function(collection,keyName,maxDepth)                       { return deepFilter_Key(collection,keyName,maxDepth);                           }
+    deepFilter_Key     : function(collection,keyName,maxDepth)                       { return deepFilter_Key(collection,keyName,maxDepth);                           },
+    deepClone          : function(identity,maxDepth,startDepth)                      { return deepClone(identity,maxDepth,startDepth);                               },
+    renameKey          : function(identity,keyName,newKeyName,maxDepth)              { return renameKey(identity,keyName,newKeyName,maxDepth);                       },
+    renameKeys         : function(identity,keyName,newKeyName,maxDepth)              { return renameKeys(identity,keyName,newKeyName,maxDepth);                      }
 }
 
 module.exports = exports = mitsuketa;
