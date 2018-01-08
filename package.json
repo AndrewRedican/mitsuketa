@@ -1,6 +1,6 @@
 {
   "name": "mitsuketa",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "A Javascript library that enables you to handle deeply nested objects easily.",
   "main": "index.js",
   "scripts": {
@@ -17,7 +17,12 @@
     "deeplynested",
     "objects",
     "deepsearch",
-    "list filtering"
+    "list filtering",
+    "cloning",
+    "deep comparison",
+    "nested objects",
+    "handling nested objects",
+    "react-json-editor-ajrm"
   ],
   "author": "Andrew Redican",
   "license": "ISC",

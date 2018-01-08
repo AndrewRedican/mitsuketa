@@ -3,15 +3,70 @@
  */
 
 /**
+ * Performs deep search on object tree, removes all properties with matching key, returns a new identity without the specified property
+ * @param {Any} identity
+ * @param {string} keyName
+ * @param {string} newKeyName
+ * @param {Optional Number} maxDepth
+ * @return {Any} identity
+ */
+function deepRemoveAll_Key(identity,keyName,maxDepth){
+    if(getType(keyName)!=='string') return undefined;
+    if(keyName==='') return undefined;
+    let clonedIdentity = deepClone(identity);
+    var paths = locateAll_Key(clonedIdentity,keyName,maxDepth);
+    if(paths===[]||paths===false) return clonedIdentity;
+    paths.forEach( path => {
+        if(path === '') path = keyName; else path += ('.' + keyName);
+        path = path.split('.');
+        var ref = clonedIdentity;
+        if(!Array.isArray(path)) delete ref[path];
+        for(var i = 0; i < path.length; i++){
+            var key = path[i];
+            if(key in ref){
+                if(i<path.length-1) ref = ref[key]; else delete ref[key]; 
+            } 
+            else break;
+        }
+    });
+    return clonedIdentity;
+}
+
+/**
+ * Performs deep search on object tree, removes the first property with matching key, returns a new identity without the specified property
+ * @param {Any} identity
+ * @param {string} keyName
+ * @param {string} newKeyName
+ * @param {Optional Number} maxDepth
+ * @return {Any} identity
+ */
+function deepRemove_Key(identity,keyName,maxDepth){
+    if(getType(keyName)!=='string') return undefined;
+    if(keyName==='') return undefined;
+    let clonedIdentity = deepClone(identity);
+    var path = locate_Key(clonedIdentity,keyName,maxDepth);
+    if(path === false) return clonedIdentity;
+    if(path === '') path = keyName; else path += ('.' + keyName);
+    path = path.split('.');
+    var ref = clonedIdentity;
+    if(!Array.isArray(path)) delete ref[path];
+    path.forEach( (key,i) => { if(i<path.length-1) ref = ref[key]; else delete ref[key]; });
+    return clonedIdentity;
+}
+
+/**
  * Performs deep search on object tree, and renames the all matching keys
  * @param {Any} identity
  * @param {string} keyName
  * @param {string} newKeyName
  * @param {Optional Number} maxDepth
+ * @return {Any} identity
  */
 function renameKeys(identity,keyName,newKeyName,maxDepth=null){
     if(getType(keyName)!=='string') return undefined;
     if(getType(newKeyName)!=='string') return undefined;
+    if(keyName==='') return undefined;
+    if(newKeyName==='') return undefined;
     function _renameKeys(identity,keyName,newKeyName,maxDepth,currentDepth=0){
         let keys;
         switch(getType(identity)){
@@ -53,10 +108,13 @@ function renameKeys(identity,keyName,newKeyName,maxDepth=null){
  * @param {string} keyName
  * @param {string} newKeyName
  * @param {Optional Number} maxDepth
+ * @return {Any} identity
  */
 function renameKey(identity,keyName,newKeyName,maxDepth=null){
     if(getType(keyName)!=='string') return undefined;
     if(getType(newKeyName)!=='string') return undefined;
+    if(keyName==='') return undefined;
+    if(newKeyName==='') return undefined;
     var applied=false;
     function _renameKey(identity,keyName,newKeyName,maxDepth,currentDepth=0){
         let keys;
@@ -160,6 +218,7 @@ function deepClone(identity,maxDepth=null,startDepth=null){
  */
 function deepFilter_Key(collection,keyName,maxDepth=null){
     if(getType(keyName)!=='string') return undefined;
+    if(keyName==='') return undefined;
     var paths = locateAll_Key(collection,keyName,maxDepth);
     if(paths === false) return undefined;
     const results = paths.map(path => {
@@ -183,6 +242,7 @@ function deepFilter_Key(collection,keyName,maxDepth=null){
  */
 function locateAll_Key(collection,keyName,maxDepth=null){
     if(getType(keyName)!=='string') return undefined;
+    if(keyName==='') return undefined;
     var R = [];
     function _locateAll_Key(collection,keyName,xKey='',path='',maxDepth=null,currentDepth=0){
         if(xKey===keyName) R[R.length] = path;
@@ -215,6 +275,7 @@ function locateAll_Key(collection,keyName,maxDepth=null){
  */
 function deepGet_Key(collection,keyName,maxDepth=null){
     if(getType(keyName)!=='string') return undefined;
+    if(keyName==='') return undefined;
     var path = locate_Key(collection,keyName,maxDepth);
     if(path === false) return undefined;
     if(path === '') path = keyName; else path += ('.' + keyName);
@@ -234,6 +295,7 @@ function deepGet_Key(collection,keyName,maxDepth=null){
  */
 function locate_Key(collection,keyName,maxDepth=null){
     if(getType(keyName)!=='string') return undefined;
+    if(keyName==='') return undefined;
     function _locate_Key(collection,keyName,path='',maxDepth,currentDepth=0){
         if(path===keyName) return path;
         var result = false;
@@ -816,7 +878,9 @@ mitsuketa = {
     deepFilter_Key     : function(collection,keyName,maxDepth)                       { return deepFilter_Key(collection,keyName,maxDepth);                           },
     deepClone          : function(identity,maxDepth,startDepth)                      { return deepClone(identity,maxDepth,startDepth);                               },
     renameKey          : function(identity,keyName,newKeyName,maxDepth)              { return renameKey(identity,keyName,newKeyName,maxDepth);                       },
-    renameKeys         : function(identity,keyName,newKeyName,maxDepth)              { return renameKeys(identity,keyName,newKeyName,maxDepth);                      }
+    renameKeys         : function(identity,keyName,newKeyName,maxDepth)              { return renameKeys(identity,keyName,newKeyName,maxDepth);                      },
+    deepRemove_Key     : function(identity,keyName,maxDepth)                         { return deepRemove_Key(identity,keyName,maxDepth);                             },
+    deepRemoveAll_Key  : function(identity,keyName,maxDepth)                         { return deepRemoveAll_Key(identity,keyName,maxDepth);                          }
 }
 
 module.exports = exports = mitsuketa;

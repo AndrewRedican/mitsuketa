@@ -17,9 +17,10 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 
 ## Lastest Release Notes
 
-1. Three new features have been released. [**renameKey**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#renamekey-identity--keyname--newkeyname--optionalmaxdepth-), [**renameKeys**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#renamekeys-identity--keyname--newkeyname--optionalmaxdepth-) to rename the properties or keys of any simple or deeply nested object on the fly! [**deepClone**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#deepclone-identity--optionalmaxdepth--optionalstartdepth---) allows you to create identical `non-reference` copies. It also has the option to create `shallow clones` and even `branch clones`.
-2. Up until recently, most of the features have focused on obtaining data from complex object trees. Now we are taking an exciting new focus on actual **deeply nested object manipulation**. Check out our [**project board**](https://github.com/AndrewRedican/mitsuketa/projects/1) for a sneak peek to the new features. Feel free suggest any feature that you'd like to see by answering the survey down below.
-3. If you haven't checked it out already, you can learn more about how we [set up and execute tests](https://github.com/AndrewRedican/mitsuketa/wiki/How-to-Create-and-Run-Tests).
+1. Two new features have been released. [**deepRemove_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#deepremove_key-identity--keyname--optionalmaxdepth-), [**deepRemoveAll_Key**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#deepremoveall_key-identity--keyname--optionalmaxdepth-) to remove the properties or keys of any simple or deeply nested object on the fly!
+2. Great News! As part of the effort to further improve documentation, next Monday, we are releasing a playground website. What you can do there is visualize data and interact with mitsuketa. To learn more of how we are achieving this, you can check out mitsuketa's sister project [**React JSON Editor**](https://www.npmjs.com/package/react-json-editor-ajrm).
+3. Up until recently, most of the features have focused on obtaining data from complex object trees. Now we are taking an exciting new focus on actual **deeply nested object manipulation**. Check out our [**project board**](https://github.com/AndrewRedican/mitsuketa/projects/1) for a sneak peek to the new features. Feel free suggest any feature that you'd like to see by answering the survey down below.
+4. If you haven't checked it out already, you can learn more about how we [set up and execute tests](https://github.com/AndrewRedican/mitsuketa/wiki/How-to-Create-and-Run-Tests).
 
 ## Overview
 
@@ -56,7 +57,8 @@ Mitsuketa makes JavaScript easier by taking the hassle out of working with deepl
 | [deepClone](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#deepclone-identity--optionalmaxdepth--optionalstartdepth---) | Creates a non-reference clone that is an exact copy to the identity provided. Can be used to create `shallow clones` of specific depths. Can also be used to create `branch clones`. Read more in [**documentation**](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#deepclone-identity--optionalmaxdepth--optionalstartdepth---) | collection, key | any |
 | [renameKey](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#renamekey-identity--keyname--newkeyname--optionalmaxdepth-) | Performs deep search on the `identity`'s object tree to rename the first matching key.  | identity, key, key | identity |
 | [renameKeys](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#renamekeys-identity--keyname--newkeyname--optionalmaxdepth-) | Performs deep search on the `identity`'s object tree to rename all matching keys.  | identity, key, key | identity |
-
+| [deepRemove_Key](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#deepremove_key-identity--keyname--optionalmaxdepth-) | Performs deep search on the `identity`'s object tree to remove the first property with matching key.  | identity, key | identity |
+| [deepRemoveAll_Key](https://github.com/AndrewRedican/mitsuketa/wiki/v1.4.x#deepremoveall_key-identity--keyname--optionalmaxdepth-) | Performs deep search on the `identity`'s object tree to remove all properties with matching key.  | identity, key | identity |
 
 ## Built With
 

@@ -1508,3 +1508,320 @@ describe('renameKeys(identity,keyName,newKeyName,maxDepth)', function() {
     });
   });
 });
+
+describe('deepRemove_Key(identity,keyName)', function() {
+  var obj = {
+    A : { _someprp   : 'Hello', sameProp: 'sameProp test' },
+    B : { SecondWord : 'World', C: ['another same test',0,3,undefined]  },
+    last_property : 'some text',
+    sameProp: 'sameProp test'
+  };
+  var res1 = {
+    A : { _someprp   : 'Hello', sameProp: 'sameProp test' },
+    last_property : 'some text',
+    sameProp: 'sameProp test'
+  };
+  var res2 = {
+    A : { _someprp   : 'Hello', sameProp: 'sameProp test' },
+    B : { SecondWord : 'World' },
+    last_property : 'some text',
+    sameProp: 'sameProp test'
+  };
+  var res3 = {
+    A : { _someprp   : 'Hello', sameProp: 'sameProp test' },
+    B : { SecondWord : 'World', C: [null,0,3,undefined]  },
+    last_property : 'some text',
+    sameProp: 'sameProp test'
+  };
+  var tests = [
+    {args: [obj,'B'],     expected: res1      },
+    {args: [obj,'C'],     expected: res2      },
+    {args: [obj,'0'],     expected: res3      },
+    {args: [obj,473],     expected: undefined },
+    {args: [obj,''],      expected: undefined },
+    {args: [obj,'World'], expected: obj       }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(2,test.args,test.expected), function() {
+      var res = mitsuketa.deepRemove_Key(test.args[0],test.args[1]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('deepRemove_Key(identity,keyName,maxDepth)', function() {
+  var obj = {
+    A : { _someprp   : 'Hello', sameProp: 'sameProp test' },
+    B : { SecondWord : 'World', C: ['another same test',0,3,undefined]  },
+    last_property : 'some text',
+    sameProp: 'sameProp test'
+  };
+  var res1 = {
+    A : { _someprp   : 'Hello', sameProp: 'sameProp test' },
+    last_property : 'some text',
+    sameProp: 'sameProp test'
+  };
+  var res2 = {
+    A : { _someprp   : 'Hello', sameProp: 'sameProp test' },
+    B : { SecondWord : 'World' },
+    last_property : 'some text',
+    sameProp: 'sameProp test'
+  };
+  var res3 = {
+    A : { _someprp   : 'Hello', sameProp: 'sameProp test' },
+    B : { SecondWord : 'World', C: [null,0,3,undefined]  },
+    last_property : 'some text',
+    sameProp: 'sameProp test'
+  };
+  var tests = [
+    {args: [obj,'B',1], expected: res1 },
+    {args: [obj,'B',0], expected: obj  },
+    {args: [obj,'C',2], expected: res2 },
+    {args: [obj,'C',1], expected: obj  },
+    {args: [obj,'0',3], expected: res3 },
+    {args: [obj,'0',2], expected: obj  }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(3,test.args,test.expected), function() {
+      var res = mitsuketa.deepRemove_Key(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('deepRemoveAll_Key(identity,keyName)', function() {
+  var res1 = [
+    { 
+      unique_id: 299, factory_id: 'alpha', model: 'br-chrome', maker: 'breez TM',
+      year: '2017', type: 'racing',
+      status: { hasOwner: false, price: 345.99 },
+      specs : {
+        dimensions: { length: '1.68m', width: '13cm', height: '1.02m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'silver',
+        components: [ 'basket', 'chain', 'handle', 'seat' ]
+      }
+    },
+    { 
+      unique_id: 300, factory_id: 'beta', model: 'XV17', maker: 'hyperwheel',
+      year: '2017', type: 'city',
+      status: { hasOwner: true, price: 1100 },
+      specs : {
+        dimensions: { length: '1.65m', width: '13cm', height: '1.03m' },
+        usability: { grip : 5.5, speed : 3, accelaration : 5, weight: '', durability: 6 },
+        color: 'red',
+        components: [ 'basket', 'chain', 'handle', 'seat' ]
+      }
+    },
+    { 
+      unique_id: 301, factory_id: 'gamma', model: 'XV15', maker: 'hyperwheel', year: '2017', type: 'sport',
+      status: { hasOwner: true, price: 1800 },
+      specs : {
+        dimensions: { length: '1.68m', width: '13cm', height: '1.02m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'red',
+        components: [ 'basket', 'chain', 'handle', 'seat', 'kinetic lights' ]
+      }
+    },
+    { 
+      unique_id: 302, factory_id: 'gamma',
+      model: '2019 pro', maker: 'hyperwheel', year: '2018', type: 'racing',
+      status: { hasOwner: false, price: 1499 },
+      specs : {
+        dimensions: { length: '1.69m', width: '11cm', height: '0.95m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'pink',
+        components: [ 'basket', 'chain', 'handle', 'seat', 'reflector lights', 'usb charger' ]
+      }
+    }
+  
+  ];
+  var res2 = [
+    { 
+      unique_id: 299, factory_id: 'alpha', model: 'br-chrome', maker: 'breez TM',
+      year: '2017', type: 'racing',
+      status: { hasOwner: false, price: 345.99 },
+      specs : {
+        dimensions: { length: '1.68m', width: '13cm', height: '1.02m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'silver'
+      },
+      sales: {
+        date_arrived: 'Nov 30, 2017', date_showcased: 'Dec 4, 2017', date_sold: false,
+        sale_opportunities: [
+          { name: 'Donn Reddick',  contact_info: '1-987-652-8775', date: 'Dec 19, 2017'},
+          { name: 'Susan Boyle',   contact_info: '1-555-101-9875', date: 'Dec 4, 2017'}
+        ]
+      }
+    },
+    { 
+      unique_id: 300, factory_id: 'beta', model: 'XV17', maker: 'hyperwheel',
+      year: '2017', type: 'city',
+      status: { hasOwner: true, price: 1100 },
+      specs : {
+        dimensions: { length: '1.65m', width: '13cm', height: '1.03m' },
+        usability: { grip : 5.5, speed : 3, accelaration : 5, weight: '', durability: 6 },
+        color: 'red'
+      },
+      sales: {
+        date_arrived: 'Nov 13, 2017', date_showcased: 'Nov 16, 2017', date_sold: false,
+        sale_opportunities: [
+          { name: 'Tom Stark', contact_info: 'N/A', date: ''},
+          { name: "Jane O'Neil", contact_info: 'N/A', date: ''}
+        ]
+      }
+    },
+    { 
+      unique_id: 301, factory_id: 'gamma', model: 'XV15', maker: 'hyperwheel', year: '2017', type: 'sport',
+      status: { hasOwner: true, price: 1800 },
+      specs : {
+        dimensions: { length: '1.68m', width: '13cm', height: '1.02m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'red'
+      },
+      sales: {
+        date_arrived: 'Nov 28, 2017', date_showcased: 'Nov 29, 2017', date_sold: 'Nov 29, 2017',
+        sale_opportunities: []
+      }
+    },
+    { 
+      unique_id: 302, factory_id: 'gamma',
+      model: '2019 pro', maker: 'hyperwheel', year: '2018', type: 'racing',
+      status: { hasOwner: false, price: 1499 },
+      specs : {
+        dimensions: { length: '1.69m', width: '11cm', height: '0.95m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'pink'
+      },
+      sales: {
+        date_arrived: false, date_showcased: false, date_sold: false,
+        sale_opportunities: []
+      }
+    }
+  ];
+  var res3 = [
+    null,
+    { 
+      unique_id: 300, factory_id: 'beta', model: 'XV17', maker: 'hyperwheel',
+      year: '2017', type: 'city',
+      status: { hasOwner: true, price: 1100 },
+      specs : {
+        dimensions: { length: '1.65m', width: '13cm', height: '1.03m' },
+        usability: { grip : 5.5, speed : 3, accelaration : 5, weight: '', durability: 6 },
+        color: 'red',
+        components: [ null, 'chain', 'handle', 'seat' ]
+      },
+      sales: {
+        date_arrived: 'Nov 13, 2017', date_showcased: 'Nov 16, 2017', date_sold: false,
+        sale_opportunities: [
+          null,
+          { name: "Jane O'Neil", contact_info: 'N/A', date: ''}
+        ]
+      }
+    },
+  
+    { 
+      unique_id: 301, factory_id: 'gamma', model: 'XV15', maker: 'hyperwheel', year: '2017', type: 'sport',
+      status: { hasOwner: true, price: 1800 },
+      specs : {
+        dimensions: { length: '1.68m', width: '13cm', height: '1.02m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'red',
+        components: [ null, 'chain', 'handle', 'seat', 'kinetic lights' ]
+      },
+      sales: {
+        date_arrived: 'Nov 28, 2017', date_showcased: 'Nov 29, 2017', date_sold: 'Nov 29, 2017',
+        sale_opportunities: []
+      }
+    },
+  
+    { 
+      unique_id: 302, factory_id: 'gamma',
+      model: '2019 pro', maker: 'hyperwheel', year: '2018', type: 'racing',
+      status: { hasOwner: false, price: 1499 },
+      specs : {
+        dimensions: { length: '1.69m', width: '11cm', height: '0.95m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'pink',
+        components: [ null, 'chain', 'handle', 'seat', 'reflector lights', 'usb charger' ]
+      },
+      sales: {
+        date_arrived: false, date_showcased: false, date_sold: false,
+        sale_opportunities: []
+      }
+    }
+  
+  ];
+  var tests = [
+    {args: [bicycles,'sales'],      expected: res1      },
+    {args: [bicycles,'components'], expected: res2      },
+    {args: [bicycles,'0'],          expected: res3      },
+    {args: [bicycles,473],          expected: undefined },
+    {args: [bicycles,''],           expected: undefined },
+    {args: [bicycles,'World'],      expected: bicycles  }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(2,test.args,test.expected), function() {
+      var res = mitsuketa.deepRemoveAll_Key(test.args[0],test.args[1]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
+
+describe('deepRemoveAll_Key(identity,keyName,maxDepth)', function() {
+  var res1 = [
+    { 
+      unique_id: 299, factory_id: 'alpha', model: 'br-chrome', maker: 'breez TM',
+      year: '2017', type: 'racing',
+      status: { hasOwner: false, price: 345.99 },
+      specs : {
+        dimensions: { length: '1.68m', width: '13cm', height: '1.02m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'silver',
+        components: [ 'basket', 'chain', 'handle', 'seat' ]
+      }
+    },
+    { 
+      unique_id: 300, factory_id: 'beta', model: 'XV17', maker: 'hyperwheel',
+      year: '2017', type: 'city',
+      status: { hasOwner: true, price: 1100 },
+      specs : {
+        dimensions: { length: '1.65m', width: '13cm', height: '1.03m' },
+        usability: { grip : 5.5, speed : 3, accelaration : 5, weight: '', durability: 6 },
+        color: 'red',
+        components: [ 'basket', 'chain', 'handle', 'seat' ]
+      }
+    },
+    { 
+      unique_id: 301, factory_id: 'gamma', model: 'XV15', maker: 'hyperwheel', year: '2017', type: 'sport',
+      status: { hasOwner: true, price: 1800 },
+      specs : {
+        dimensions: { length: '1.68m', width: '13cm', height: '1.02m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'red',
+        components: [ 'basket', 'chain', 'handle', 'seat', 'kinetic lights' ]
+      }
+    },
+    { 
+      unique_id: 302, factory_id: 'gamma',
+      model: '2019 pro', maker: 'hyperwheel', year: '2018', type: 'racing',
+      status: { hasOwner: false, price: 1499 },
+      specs : {
+        dimensions: { length: '1.69m', width: '11cm', height: '0.95m' },
+        usability: { grip : 5, speed : 4, accelaration : 8, weight: '', durability: 10 },
+        color: 'pink',
+        components: [ 'basket', 'chain', 'handle', 'seat', 'reflector lights', 'usb charger' ]
+      }
+    }
+  ];
+  var tests = [
+    {args: [bicycles,'sales',2], expected: res1      },
+    {args: [bicycles,'sales',1], expected: bicycles  }
+  ];
+  tests.forEach(function(test) {
+    it(opDescription(3,test.args,test.expected), function() {
+      var res = mitsuketa.deepRemoveAll_Key(test.args[0],test.args[1],test.args[2]);
+      assert.equal(stringify(res), stringify(test.expected));
+    });
+  });
+});
