@@ -1,0 +1,43 @@
+{
+  "name": "mitsuketa",
+  "version": "1.4.4",
+  "description": "A Javascript library that enables you to handle deeply nested objects easily.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha test/*test.js",
+    "dependents": "node dependents.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndrewRedican/mitsuketa.git"
+  },
+  "keywords": [
+    "mitsuketa",
+    "javascript",
+    "deeplynested",
+    "objects",
+    "deepsearch",
+    "list filtering",
+    "cloning",
+    "deep comparison",
+    "nested objects",
+    "handling nested objects",
+    "react-json-editor-ajrm",
+    "mitsuketajs.org",
+    "utility",
+    "middleware"
+  ],
+  "author": "Andrew Redican",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndrewRedican/mitsuketa/issues"
+  },
+  "homepage": "https://github.com/AndrewRedican/mitsuketa#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "json": "^9.0.6",
+    "mocha": "^4.0.1",
+    "package-dependents": "^1.2.10"
+  }
+}
