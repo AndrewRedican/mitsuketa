@@ -16,12 +16,13 @@ class Documentation extends Component {
         const { functionNames, renderExample } = this;
         const list = functionNames.map( (fxName,i) => {
             return(
-                <div className = 'w3-row'>
+                <div 
+                    key       = {'section-item-' + i}
+                    id        = {'section-' + fxName}
+                    className = 'w3-row'>
                     <div className = 'w3-col s1 m2 l3'>&nbsp;</div>
                     <div className = 'w3-col s10 m8 l6'>
                         <div 
-                            key       = {'section-item-' + i}
-                            id        = {'section-' + fxName}
                             className = 'w3-container w3-content w3-center w3-padding-64'
                             style     = {{ 
                                 maxWidth : '1000px'
