@@ -32,7 +32,7 @@ class SideBar extends Component{
                 style     = {{ 
                     height    : '85%',
                     marginTop : '5px',
-                    width     : '200px',
+                    width     : '160px',
                     overflow  : 'hidden'
                 }}
             >

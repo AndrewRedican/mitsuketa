@@ -826,10 +826,10 @@ function sameStructure(identityA,identityB){
 }
 
 /**
- * Compares data type of two identities, will dataType if true.
+ * Compares data type of two identities, will return data type if true.
  * @param {Any} identityA
  * @param {Any} identityB
- * @return {boolean} true || false
+ * @return {String || boolean} string || false
  */
 function sameType(identityA,identityB){ 
     const typeA = getType(identityA); return typeA === getType(identityB) ? typeA : false; 

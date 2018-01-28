@@ -5,11 +5,11 @@
 var Info = {
     getType : { 
         parameters  : { type : ['Any'] }, result : { type : 'String', name : 'dataType' }, 
-        description : 'Gets data type; makes distintion between object, array, and null.'
+        description : 'Gets data type; makes distinction between object, array, and null.'
     }, 
     sameType : { 
         parameters  : { type : ['Any','Any'] }, result : { type : 'boolean', name : 'true || false' }, 
-        description : 'Compares data type of two identities, will dataType if true.'
+        description : 'Compares data type of two identities, will data type as string if true.'
     }, 
     sameStructure : { 
         parameters  : { type : ['Any','Any'] }, result : { type : 'String || false', name : 'DataType' }, 
