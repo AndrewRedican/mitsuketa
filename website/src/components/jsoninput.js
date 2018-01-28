@@ -650,7 +650,7 @@ class JSONInput extends Component {
                     const nextToken = buffer.tokens_merge[i];
                     switch(nextToken.type){
                         case 'space' : case 'linebreak' : break;
-                        case 'symbol' : 
+                        case 'symbol' : case 'colon' :
                             if(options.indexOf(nextToken.string)>-1) return i;
                             else return false;
                         break;
@@ -667,7 +667,7 @@ class JSONInput extends Component {
                     const previousToken = buffer.tokens_merge[i];
                     switch(previousToken.type){
                         case 'space' : case 'linebreak' : break;
-                        case 'symbol' : 
+                        case 'symbol' : case 'colon' :
                             if(options.indexOf(previousToken.string)>-1) return i;
                             else return false;
                         break;
@@ -717,6 +717,7 @@ class JSONInput extends Component {
                             break;
                             case ':' : case ',' : 
                                 found = followsSymbol(i,[':',',']);
+                                if(i===15)console.log('found:',found);
                                 if(found){
                                     setError(
                                         i,
@@ -728,6 +729,7 @@ class JSONInput extends Component {
                             break;
                             default : break;
                         }
+
                     /**
                      * string cannot follow something different from a colon or [  ,
                      * number cannot follow something different from a colon
@@ -742,6 +744,7 @@ class JSONInput extends Component {
                      * colon cannot follow another comma
                      * colon cannot exist inside []
                      * 
+                     * undefined primvitive type && consecutive comma
                      */
                     break;
                     default :
