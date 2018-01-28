@@ -141,8 +141,7 @@ class TryItYourselfButton extends Component{
                 }}
                 onClick = {onClick}
             >
-                <span>Try it Yourself</span>
-                <span className = 'fa fa-chevron-down' style = {{ marginLeft : '5px' }}/>
+                <span>Try it</span>
             </div>
         );
     }
