@@ -18,22 +18,35 @@ class SideBar extends Component{
                 <a 
                     key       = {'sideBar-item-' + i}
                     name      = {item}
-                    className = {'w3-bar-item' + ( item !== selected ? ' w3-hover-text-theme' : '') + ( item === selected ? ' w3-theme' : '' )}
-                    style     = {{ textDecoration : 'none !important' }}
+                    className = {'w3-bar-item w3-small' + ( item !== selected ? ' w3-hover-text-theme' : '') + ( item === selected ? ' w3-theme' : '' )}
+                    style     = {{ 
+                        textDecoration : 'none !important'
+                    }}
                     onClick   = {this.onSelect}>{item}
                 </a>
             );
         });
         return(
-            <div className = 'w3-sidebar w3-bar-block w3-collapse w3-card' style = {{ height : '85%', marginTop: '5px', width : '200px', overflow : 'hidden' }}>
-                <input
-                    id          = 'searchBox'
-                    className   = 'w3-input w3-border-theme w3-padding' 
-                    type        = 'text'
-                    placeholder = 'Search for function..'
+            <div 
+                className = 'w3-sidebar w3-bar-block w3-collapse w3-card'
+                style     = {{ 
+                    height    : '85%',
+                    marginTop : '5px',
+                    width     : '200px',
+                    overflow  : 'hidden'
+                }}
+            >
+                <SearchBox
+                    placeholder = 'Search...'
                     onChange    = {onSearch}
                 />
-                <div style = {{ position : 'relative', height : '90%', overflowY : 'scroll', overflowX : 'hidden' }}>
+                <div style = {{ 
+                        position  : 'relative',
+                        height    : '90%',
+                        overflowY : 'scroll',
+                        overflowX : 'hidden'
+                    }}
+                >
                     {List}
                 </div>
             </div>
@@ -63,6 +76,28 @@ class SideBar extends Component{
     }
 }
 
+class SearchBox extends Component{
+    constructor(props){
+        super(props);
+        this.onChange = this.onChange   .bind(this);
+    }
+    render(){
+        const { onChange } = this;
+        return (
+            <input
+                name        = 'searchBox'
+                id          = 'searchBox'
+                className   = 'w3-input w3-small w3-border-theme w3-padding' 
+                type        = 'text'
+                placeholder = {'placeholder' in this.props ? this.props.placeholder : '' }
+                onChange    = {onChange}
+            />
+        );
+    }
+    onChange(event){
+        if('onChange' in this.props) this.props.onChange(event);
+        else console.warn('onChange event handler from SearchBox has not been specified by parent component.');
+    }
+}
+
 export default SideBar;
-
-
