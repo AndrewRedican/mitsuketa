@@ -509,9 +509,7 @@ class JSONInput extends Component {
             let buffer2 = {
                 brackets   : [],
                 stringOpen : false,
-                isValue    : false,
-                errors     : false,
-                
+                isValue    : false
             };
             buffer.tokens_fallback.forEach( function(token,i) {
                 const
@@ -606,7 +604,7 @@ class JSONInput extends Component {
                     type    : token.type,
                     tokens  : [i]
                 };
-                if(token.type!=='symbol')
+                if(['symbol','colon'].indexOf(token.type)===-1)
                 if(i + 1 < buffer.tokens_normalize.length){
                     let count = 0;
                     for(var u = i + 1; u < buffer.tokens_normalize.length; u++){
@@ -620,35 +618,134 @@ class JSONInput extends Component {
                 }
                 buffer.tokens_merge.push(mergedToken);
             }
-
-            const quotes = '\'"';
+            const 
+                quotes = '\'"',
+                alphanumeric = (
+                    'abcdefghijklmnopqrstuvwxyz' +
+                    'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+                    '0123456789' +
+                    '_$'
+                );
             var
                 error = false,
-                line  = buffer.tokens_merge.length > 0 ? 1 : 0,
-                char  = 0;
-            function setError(tokenID,reason){
+                line  = buffer.tokens_merge.length > 0 ? 1 : 0;
+            buffer2 = {
+                brackets   : [],
+                stringOpen : false,
+                isValue    : false
+            };
+            function setError(tokenID,reason,offset=0){
                 error = {
                     token  : tokenID,
                     line   : line,
-                    char   : char,   
                     reason : reason
                 };
+                buffer.tokens_merge[tokenID+offset].type = 'error';
             }
-
-            /**
-             *  CALCULATE RELATIVE POSITION OF CHAR FOR ERROR
-             */
+            function followedBySymbol(tokenID,options){
+                if(options===undefined) console.error('tokenID argument must be an integer.');
+                if(options===undefined) console.error('options argument must be an array.');
+                if(tokenID===buffer.tokens_merge.length-1) return false;
+                for(var i = tokenID + 1; i < buffer.tokens_merge.length; i++){
+                    const nextToken = buffer.tokens_merge[i];
+                    switch(nextToken.type){
+                        case 'space' : case 'linebreak' : break;
+                        case 'symbol' : 
+                            if(options.indexOf(nextToken.string)>-1) return i;
+                            else return false;
+                        break;
+                        default : return false; break;
+                    }
+                }
+                return false;
+            }
+            function followsSymbol(tokenID,options){
+                if(options===undefined) console.error('tokenID argument must be an integer.');
+                if(options===undefined) console.error('options argument must be an array.');
+                if(tokenID===0) return false;
+                for(var i = tokenID - 1; i >= 0; i--){
+                    const previousToken = buffer.tokens_merge[i];
+                    switch(previousToken.type){
+                        case 'space' : case 'linebreak' : break;
+                        case 'symbol' : 
+                            if(options.indexOf(previousToken.string)>-1) return i;
+                            else return false;
+                        break;
+                        default : return false; break;
+                    }
+                }
+                return false;
+            }
+            console.log('buffer.tokens_merge:',buffer.tokens_merge);
             for(var i = 0; i < buffer.tokens_merge.length; i++){
                 if(error) break;
                 let
                     token  = buffer.tokens_merge[i],
                     string = token.string,
-                    type   = token.type;
+                    type   = token.type,
+                    found  = false;
                 switch(type){
                     case 'space' : break;
                     case 'linebreak' : line++; break;
+                    case 'symbol' : case 'colon' :
+                        switch(string){
+                            case '{' : case '[' : 
+                                found = followsSymbol(i,['}',']']);
+                                if(found){
+                                    setError(
+                                        i,
+                                        '\'' + buffer.tokens_merge[found].string + '\' token cannot be followed by \'' + 
+                                        string + '\' token'
+                                    );
+                                    break;
+                                }
+                                buffer2.brackets.push(string);
+                            break;
+                            case '}' : 
+                                if(buffer2.brackets[buffer2.brackets.length-1]!=='{'){
+                                    setError(i,'Missing \'{\' open curly brace');
+                                    break;
+                                }
+                                buffer2.brackets.pop();
+                            break;
+                            case ']' : 
+                                if(buffer2.brackets[buffer2.brackets.length-1]!=='['){
+                                    setError(i,'Missing \'[\' open brace');
+                                    break;
+                                }
+                                buffer2.brackets.pop();
+                            break;
+                            case ':' : case ',' : 
+                                found = followsSymbol(i,[':',',']);
+                                if(found){
+                                    setError(
+                                        i,
+                                        '\'' + string + '\' token cannot be follow a \'' + 
+                                        buffer.tokens_merge[found].string + '\' token'
+                                    );
+                                    break;
+                                }
+                            break;
+                            default : break;
+                        }
+                    /**
+                     * string cannot follow something different from a colon or [  ,
+                     * number cannot follow something different from a colon
+                     * primitive cannot follow something different from a colon
+                     * 
+                     * string can only be followed by , ] }
+                     * 
+                     * }] cannot be next to {[ w/o space||linebreak
+                     * require comma
+                     * 
+                     * comma cannot follow another comma w/o space||linebreak inside { }
+                     * colon cannot follow another comma
+                     * colon cannot exist inside []
+                     * 
+                     */
+                    break;
                     default :
-                        if(['key','string'].indexOf(type) > -1){
+                        if(['key','string'].indexOf(type)>-1){
                             let
                                 firstChar     = string.charAt(0),
                                 lastChar      = string.charAt(string.length - 1),
@@ -656,20 +753,38 @@ class JSONInput extends Component {
                             if(quotes.indexOf(firstChar)===-1)
                             if(quotes.indexOf(lastChar)!==-1){
                                 setError(i,'Missing opening ' + lastChar + ' quote on ' + type);
-                                buffer.tokens_merge[i].type = 'error';
                                 break;
                             }
                             if(quotes.indexOf(lastChar)===-1)
                             if(quotes.indexOf(firstChar)!==-1){
                                 setError(i,'Missing closing ' + firstChar + ' quote on ' + type);
-                                buffer.tokens_merge[i].type = 'error';
                                 break;
                             }
-                            if(quotes.indexOf(firstChar) > -1)
+                            if(quotes.indexOf(firstChar)>-1)
                             if(firstChar!==lastChar){
                                 setError(i,'Missing closing ' + firstChar + ' quote on ' + type);
-                                buffer.tokens_merge[i].type = 'error';
                                 break;
+                            }
+                            if('string'===type)
+                            if(quotes.indexOf(firstChar)===-1 && quotes.indexOf(lastChar)===-1){
+                                setError(i,'String has to be wrapped around quotes');
+                                break;
+                            }
+                            if('key'===type)
+                            if(quotes.indexOf(firstChar)>-1)
+                            if(string.length<=2){
+                                setError(i,'Key cannot be an empty string');
+                                break;
+                            }
+                            if('key'===type)
+                            if(quotes.indexOf(firstChar)===-1 && quotes.indexOf(lastChar)===-1)
+                            for(var h = 0; h < string.length; h++){
+                                if(error) break;
+                                const c = string.charAt(h);
+                                if(alphanumeric.indexOf(c)===-1){
+                                    setError(i,'Non-alphanemeric token \'' + c + '\' is not allowed outside string notation');
+                                    break;
+                                }
                             }
                             if(firstChar==="'") string = '"' + string.slice(1,-1) + '"';
                             else if (firstChar!=='"') string = '"' + string + '"';
@@ -679,12 +794,20 @@ class JSONInput extends Component {
                 }
             }
 
+            if(error) buffer.json = undefined;
+
+            console.log('error:',error);
             /**
-             * REQUIRE TO VALIDATE NON ALPHANUMERIC OUTSIDE STRING
-             * KEY EXCEPTIONS: $ _
+             * VALIDATIONS:
+             * 
+             * 1. AFTER ANY NON SYMBOL A SYMBOL MUST FOLLOW
+             * */
+
+            
+            /**
+             * SUBSTITUTE ANY PRIMITIVE UNDEFINED TO NULL
              */
-
-
+            
             if(!error)
             try { 
                 buffer.jsObject = JSON.parse(buffer.json);
@@ -710,7 +833,7 @@ class JSONInput extends Component {
                              * make sure not to adjust different the space between key colon value
                              */
                             //buffer.tokens_merge[i] = '';
-                            console.log('depth:',depth,'space string:',token.string.length);
+                            //console.log('depth:',depth,'space string:',token.string.length);
                         default : break;
                     }
                 });
