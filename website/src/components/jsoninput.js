@@ -643,7 +643,7 @@ class JSONInput extends Component {
                 buffer.tokens_merge[tokenID+offset].type = 'error';
             }
             function followedBySymbol(tokenID,options){
-                if(options===undefined) console.error('tokenID argument must be an integer.');
+                if(tokenID===undefined) console.error('tokenID argument must be an integer.');
                 if(options===undefined) console.error('options argument must be an array.');
                 if(tokenID===buffer.tokens_merge.length-1) return false;
                 for(var i = tokenID + 1; i < buffer.tokens_merge.length; i++){
@@ -660,7 +660,7 @@ class JSONInput extends Component {
                 return false;
             }
             function followsSymbol(tokenID,options){
-                if(options===undefined) console.error('tokenID argument must be an integer.');
+                if(tokenID===undefined) console.error('tokenID argument must be an integer.');
                 if(options===undefined) console.error('options argument must be an array.');
                 if(tokenID===0) return false;
                 for(var i = tokenID - 1; i >= 0; i--){
@@ -676,7 +676,19 @@ class JSONInput extends Component {
                 }
                 return false;
             }
-            console.log('buffer.tokens_merge:',buffer.tokens_merge);
+            function typeFollowed(tokenID){
+                if(tokenID===undefined) console.error('tokenID argument must be an integer.');
+                if(tokenID===0) return false;
+                for(var i = tokenID - 1; i >= 0; i--){
+                    const previousToken = buffer.tokens_merge[i];
+                    switch(previousToken.type){
+                        case 'space' : case 'linebreak' : break;
+                        default : return previousToken.type; break;
+                    }
+                }
+                return false;
+            }
+            console.log(buffer.tokens_merge); //DELETE ME LATER
             for(var i = 0; i < buffer.tokens_merge.length; i++){
                 if(error) break;
                 let
@@ -687,7 +699,8 @@ class JSONInput extends Component {
                 switch(type){
                     case 'space' : break;
                     case 'linebreak' : line++; break;
-                    case 'symbol' : case 'colon' :
+                    case 'symbol' :
+                        if(i===52) console.log('* typeFollowed(i):',typeFollowed(i));
                         switch(string){
                             case '{' : case '[' : 
                                 found = followsSymbol(i,['}',']']);
@@ -715,101 +728,94 @@ class JSONInput extends Component {
                                 }
                                 buffer2.brackets.pop();
                             break;
-                            case ':' : case ',' : 
-                                found = followsSymbol(i,[':',',']);
-                                if(i===15)console.log('found:',found);
-                                if(found){
-                                    setError(
-                                        i,
-                                        '\'' + string + '\' token cannot be follow a \'' + 
-                                        buffer.tokens_merge[found].string + '\' token'
-                                    );
-                                    break;
-                                }
-                            break;
                             default : break;
                         }
-
-                    /**
-                     * string cannot follow something different from a colon or [  ,
-                     * number cannot follow something different from a colon
-                     * primitive cannot follow something different from a colon
-                     * 
-                     * string can only be followed by , ] }
-                     * 
-                     * }] cannot be next to {[ w/o space||linebreak
-                     * require comma
-                     * 
-                     * comma cannot follow another comma w/o space||linebreak inside { }
-                     * colon cannot follow another comma
-                     * colon cannot exist inside []
-                     * 
-                     * undefined primvitive type && consecutive comma
-                     */
                     break;
-                    default :
-                        if(['key','string'].indexOf(type)>-1){
-                            let
-                                firstChar     = string.charAt(0),
-                                lastChar      = string.charAt(string.length - 1),
-                                quote_primary = quotes.indexOf(firstChar);
-                            if(quotes.indexOf(firstChar)===-1)
-                            if(quotes.indexOf(lastChar)!==-1){
-                                setError(i,'Missing opening ' + lastChar + ' quote on ' + type);
-                                break;
-                            }
-                            if(quotes.indexOf(lastChar)===-1)
-                            if(quotes.indexOf(firstChar)!==-1){
-                                setError(i,'Missing closing ' + firstChar + ' quote on ' + type);
-                                break;
-                            }
-                            if(quotes.indexOf(firstChar)>-1)
-                            if(firstChar!==lastChar){
-                                setError(i,'Missing closing ' + firstChar + ' quote on ' + type);
-                                break;
-                            }
-                            if('string'===type)
-                            if(quotes.indexOf(firstChar)===-1 && quotes.indexOf(lastChar)===-1){
-                                setError(i,'String has to be wrapped around quotes');
-                                break;
-                            }
-                            if('key'===type)
-                            if(quotes.indexOf(firstChar)>-1)
-                            if(string.length<=2){
-                                setError(i,'Key cannot be an empty string');
-                                break;
-                            }
-                            if('key'===type)
-                            if(quotes.indexOf(firstChar)===-1 && quotes.indexOf(lastChar)===-1)
-                            for(var h = 0; h < string.length; h++){
-                                if(error) break;
-                                const c = string.charAt(h);
-                                if(alphanumeric.indexOf(c)===-1){
-                                    setError(i,'Non-alphanemeric token \'' + c + '\' is not allowed outside string notation');
-                                    break;
-                                }
-                            }
-                            if(firstChar==="'") string = '"' + string.slice(1,-1) + '"';
-                            else if (firstChar!=='"') string = '"' + string + '"';
+                    case 'colon' :
+                        if(i===52) console.log('!typeFollowed(i):',typeFollowed(i));
+                        if(typeFollowed(i)!=='key'){
+                            setError(i,'Colon can only follow key');
+                            break;
                         }
-                        buffer.json += string;
+                    break;
+                    case 'key' : case 'string' :
+                        let
+                            firstChar     = string.charAt(0),
+                            lastChar      = string.charAt(string.length - 1),
+                            quote_primary = quotes.indexOf(firstChar);
+                        if(quotes.indexOf(firstChar)===-1)
+                        if(quotes.indexOf(lastChar)!==-1){
+                            setError(i,'Missing opening ' + lastChar + ' quote on ' + type);
+                            break;
+                        }
+                        if(quotes.indexOf(lastChar)===-1)
+                        if(quotes.indexOf(firstChar)!==-1){
+                            setError(i,'Missing closing ' + firstChar + ' quote on ' + type);
+                            break;
+                        }
+                        if(quotes.indexOf(firstChar)>-1)
+                        if(firstChar!==lastChar){
+                            setError(i,'Missing closing ' + firstChar + ' quote on ' + type);
+                            break;
+                        }
+                        if('string'===type)
+                        if(quotes.indexOf(firstChar)===-1 && quotes.indexOf(lastChar)===-1){
+                            setError(i,'String has to be wrapped around quotes');
+                            break;
+                        }
+                        if('key'===type)
+                        if(quotes.indexOf(firstChar)>-1)
+                        if(string.length<=2){
+                            setError(i,'Key cannot be an empty string');
+                            break;
+                        }
+                        if('key'===type)
+                        if(quotes.indexOf(firstChar)===-1 && quotes.indexOf(lastChar)===-1)
+                        for(var h = 0; h < string.length; h++){
+                            if(error) break;
+                            const c = string.charAt(h);
+                            if(alphanumeric.indexOf(c)===-1){
+                                setError(i,'Non-alphanemeric token \'' + c + '\' is not allowed outside string notation');
+                                break;
+                            }
+                        }
+                        if(firstChar==="'") string = '"' + string.slice(1,-1) + '"';
+                        else if (firstChar!=='"') string = '"' + string + '"';
+                    break;
+                    case 'key' : 
+                        found = followsSymbol(i,['{',',']);
+                        if(!found){
+                            setError(i,'Key can only follow \'{\' or \',\' tokens');
+                            break;
+                        }
+                    break;
+                    case 'string' : case 'number' : case 'primitive' :
+                        found = followsSymbol(i,['[',':',',']);
+                        if(!found){
+                            setError(i,type + ' can only follow \'[\' \':\' \',\' tokens');
+                            break;
+                        }
                     break;
                 }
+                buffer.json += string;
             }
+            
+            /**
+             * Pending On-Process Validations:
+             * 
+             * 1. comma can only follow non-symbol non-key and other commas
+             * 2. colon cannot exist inside []
+             * 
+             * Pending Post-Process Validations:
+             * 
+             * 1. Space add at end of key should not create an error based on depth
+             * 2. Check for * 'undefined' primitive types && consecutive commas to * add/set nulls
+             * to make valid json
+             */
 
             if(error) buffer.json = undefined;
 
-            console.log('error:',error);
-            /**
-             * VALIDATIONS:
-             * 
-             * 1. AFTER ANY NON SYMBOL A SYMBOL MUST FOLLOW
-             * */
-
-            
-            /**
-             * SUBSTITUTE ANY PRIMITIVE UNDEFINED TO NULL
-             */
+            console.log('error:',error); //DELETE ME LATER
             
             if(!error)
             try { 
