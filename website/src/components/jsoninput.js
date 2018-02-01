@@ -473,6 +473,10 @@ class JSONInput extends Component {
                         if(string.length > 1) return false;
                         if('{[:]},'.indexOf(string)===-1) return false;
                     break;
+                    case 'colon' :
+                        if(string.length > 1) return false;
+                        if(':'!==string) return false;
+                    break;
                     default : return true; break;
                 }
                 return true;
@@ -725,6 +729,23 @@ class JSONInput extends Component {
                                 }
                                 buffer2.brackets.pop();
                             break;
+                            case ',' :
+                                found = typeFollowed(i);
+                                switch(found){
+                                    case 'key' : case 'colon' :
+                                        setError(i,'Comma cannot follow ' + found);
+                                        break;
+                                    break;
+                                    case 'symbol' :
+                                        found = followsSymbol(i,['{']);
+                                        if(found){
+                                            setError(i,'Comma cannot follow \'{\' token');
+                                            break;
+                                        }
+                                    break;
+                                    default : break;
+                                }
+                            break;
                             default : break;
                         }
                     break;
@@ -798,18 +819,21 @@ class JSONInput extends Component {
             
             /**
              * Pending On-Process Validations:
-             * 
-             * 1. comma can only follow non-symbol non-key and other commas
-             * 2. colon cannot exist inside []
-             * 
+             * 1. if comma is follows colon or { ignore ....
+             * 2. comma cannot exist inside {}  
+             * 3. colon cannot exist inside []
+             * 4. key cannot be in value-designated position
+             *  
              * Pending Post-Process Validations:
              * 
              * 1. Space add at end of key should not create an error based on depth
              * 2. Check for * 'undefined' primitive types && consecutive commas to * add/set nulls
              * to make valid json
              */
-            console.log('PROTO: ',buffer.tokens_proto);
+            //console.log('PROTO: ',buffer.tokens_proto);
             console.log('SPLIT: ',buffer.tokens_split);
+            console.log('FALLBACK: ',buffer.tokens_fallback);
+            console.log('NORMALIZE: ',buffer.tokens_normalize);
             if(error) console.log('MERGE: ',buffer.tokens_merge); //DELETE ME LATER
             if(error) console.log('error:',error); //DELETE ME LATER
 
