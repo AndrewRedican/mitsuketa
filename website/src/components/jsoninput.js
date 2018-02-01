@@ -611,7 +611,6 @@ class JSONInput extends Component {
                 primitive       : 'primitive'       in themeColors ? themeColors.primitive       : '#6392C6',
                 error           : 'error'           in themeColors ? themeColors.error           : '#ED0000'
             };
-
             for(var i = 0; i < buffer.tokens_normalize.length; i++){
                 const token = buffer.tokens_normalize[i];
                 let mergedToken = {
@@ -633,6 +632,22 @@ class JSONInput extends Component {
                 }
                 buffer.tokens_merge.push(mergedToken);
             }
+            /**
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             * 
+             */
             const 
                 quotes = '\'"',
                 alphanumeric = (
@@ -726,6 +741,7 @@ class JSONInput extends Component {
                                     break;
                                 }
                                 buffer2.brackets.push(string);
+                                buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
                             break;
                             case '}' : 
                                 if(buffer2.brackets[buffer2.brackets.length-1]!=='{'){
@@ -733,6 +749,7 @@ class JSONInput extends Component {
                                     break;
                                 }
                                 buffer2.brackets.pop();
+                                buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
                             break;
                             case ']' : 
                                 if(buffer2.brackets[buffer2.brackets.length-1]!=='['){
@@ -740,8 +757,10 @@ class JSONInput extends Component {
                                     break;
                                 }
                                 buffer2.brackets.pop();
+                                buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
                             break;
                             case ',' :
+                                //INSERT RULE
                                 found = typeFollowed(i);
                                 switch(found){
                                     case 'key' : case 'colon' :
@@ -757,11 +776,13 @@ class JSONInput extends Component {
                                     break;
                                     default : break;
                                 }
+                                buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
                             break;
                             default : break;
                         }
                     break;
                     case 'colon' :
+                        //INSERT RULE
                         if(typeFollowed(i)!=='key'){
                             setError(i,'Colon can only follow key');
                             break;
@@ -831,9 +852,10 @@ class JSONInput extends Component {
             
             /**
              * Pending On-Process Validations:
-             * 1. comma cannot exist inside {} o keyspace
-             * 2. colon cannot exist inside []
-             * 3. key cannot be in value-designated position
+             * 0. Value and key space identification
+             * 1. colon cannot exist inside [] 
+             * 2. comma cannot exist inside {} in keyspace
+             * 3. values cannot in key space or keys in value space
              *  
              * Pending Post-Process Validations:
              * 
