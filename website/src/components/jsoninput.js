@@ -508,7 +508,18 @@ class JSONInput extends Component {
                 };
                 buffer.tokens_fallback.push(tokul);
             });
-
+            function tokenFollowed(){
+                const last = buffer.tokens_normalize.length - 1;
+                if(last<1) return false;
+                for(var i = last; i >= 0; i--){
+                    const previousToken = buffer.tokens_normalize[i];
+                    switch(previousToken.type){
+                        case 'space' : case 'linebreak' : break;
+                        default : return previousToken; break;
+                    }
+                }
+                return false;
+            }
             let buffer2 = {
                 brackets   : [],
                 stringOpen : false,
@@ -539,6 +550,7 @@ class JSONInput extends Component {
                                 buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
                             break;
                             case ',' :
+                                if(tokenFollowed().type==='colon') break;
                                 buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
                             break;
                             case ':' :
@@ -819,10 +831,9 @@ class JSONInput extends Component {
             
             /**
              * Pending On-Process Validations:
-             * 1. if comma is follows colon or { ignore ....
-             * 2. comma cannot exist inside {}  
-             * 3. colon cannot exist inside []
-             * 4. key cannot be in value-designated position
+             * 1. comma cannot exist inside {} o keyspace
+             * 2. colon cannot exist inside []
+             * 3. key cannot be in value-designated position
              *  
              * Pending Post-Process Validations:
              * 
@@ -831,10 +842,10 @@ class JSONInput extends Component {
              * to make valid json
              */
             //console.log('PROTO: ',buffer.tokens_proto);
-            console.log('SPLIT: ',buffer.tokens_split);
+            //console.log('SPLIT: ',buffer.tokens_split);
             console.log('FALLBACK: ',buffer.tokens_fallback);
             console.log('NORMALIZE: ',buffer.tokens_normalize);
-            if(error) console.log('MERGE: ',buffer.tokens_merge); //DELETE ME LATER
+            //if(error) console.log('MERGE: ',buffer.tokens_merge); //DELETE ME LATER
             if(error) console.log('error:',error); //DELETE ME LATER
 
             if(error) buffer.json = undefined;
