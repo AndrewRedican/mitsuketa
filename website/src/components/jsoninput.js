@@ -453,7 +453,7 @@ class JSONInput extends Component {
                                 return false;
                             }
                         } else {
-                            const nonAlphanumeric = '\'"`.,:;{}[]&<>=~*%<>\\|/-+!?@^';
+                            const nonAlphanumeric = '\'"`.,:;{}[]&<>=~*%<>\\|/-+!?@^ \xa0';
                             for(var i = 0; i < nonAlphanumeric.length; i++){
                                 const nonAlpha = nonAlphanumeric.charAt(i);
                                 if(string.indexOf(nonAlpha) > -1) return false;
@@ -477,14 +477,13 @@ class JSONInput extends Component {
                 }
                 return true;
             }
-            buffer.tokens_proto.forEach( function(token) {
+            buffer.tokens_proto.forEach( function(token,i) {
                 if(token.type.indexOf('proto')===-1){
                     if(!validToken(token.string,token.type)){
                         buffer.tokens_split = buffer.tokens_split.concat(quarkize(token.string,'split'));
                     } else buffer.tokens_split.push(token);
                 } else buffer.tokens_split.push(token);
             });
-
             buffer.tokens_split.forEach( function(token) {
                 let
                     type     = token.type,
@@ -688,7 +687,6 @@ class JSONInput extends Component {
                 }
                 return false;
             }
-            console.log(buffer.tokens_merge); //DELETE ME LATER
             for(var i = 0; i < buffer.tokens_merge.length; i++){
                 if(error) break;
                 let
@@ -700,7 +698,6 @@ class JSONInput extends Component {
                     case 'space' : break;
                     case 'linebreak' : line++; break;
                     case 'symbol' :
-                        if(i===52) console.log('* typeFollowed(i):',typeFollowed(i));
                         switch(string){
                             case '{' : case '[' : 
                                 found = followsSymbol(i,['}',']']);
@@ -732,7 +729,6 @@ class JSONInput extends Component {
                         }
                     break;
                     case 'colon' :
-                        if(i===52) console.log('!typeFollowed(i):',typeFollowed(i));
                         if(typeFollowed(i)!=='key'){
                             setError(i,'Colon can only follow key');
                             break;
@@ -812,10 +808,14 @@ class JSONInput extends Component {
              * 2. Check for * 'undefined' primitive types && consecutive commas to * add/set nulls
              * to make valid json
              */
+            console.log('PROTO: ',buffer.tokens_proto);
+            console.log('SPLIT: ',buffer.tokens_split);
+            if(error) console.log('MERGE: ',buffer.tokens_merge); //DELETE ME LATER
+            if(error) console.log('error:',error); //DELETE ME LATER
 
             if(error) buffer.json = undefined;
 
-            console.log('error:',error); //DELETE ME LATER
+            
             
             if(!error)
             try { 
