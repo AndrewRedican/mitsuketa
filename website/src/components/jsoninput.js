@@ -700,8 +700,8 @@ class JSONInput extends Component {
                     switch(previousToken.type){
                         case 'space' : case 'linebreak' : break;
                         case 'symbol' : case 'colon' :
-                            if(options.indexOf(previousToken.string)>-1) return i;
-                            else return false;
+                            if(options.indexOf(previousToken.string)>-1) return true;
+                            return false;
                         break;
                         default : return false; break;
                     }
@@ -723,10 +723,10 @@ class JSONInput extends Component {
             for(var i = 0; i < buffer.tokens_merge.length; i++){
                 if(error) break;
                 let
-                    token  = buffer.tokens_merge[i],
-                    string = token.string,
-                    type   = token.type,
-                    found  = false;
+                    token      = buffer.tokens_merge[i],
+                    string     = token.string,
+                    type       = token.type,
+                    found      = false;
                 switch(type){
                     case 'space' : break;
                     case 'linebreak' : line++; break;
@@ -740,6 +740,12 @@ class JSONInput extends Component {
                                         '\'' + buffer.tokens_merge[found].string + '\' token cannot be followed by \'' + 
                                         string + '\' token'
                                     );
+                                    break;
+                                }
+                                if(string==='['&&i>0)
+                                if(!followsSymbol(i,[':','[',','])){
+                                    console.log('follows: ' + followsSymbol(i,[':','[',',']));
+                                    setError(i,'\'[\' token can only follow \':\', \'[\', and \',\' tokens');
                                     break;
                                 }
                                 buffer2.brackets.push(string);
@@ -756,6 +762,10 @@ class JSONInput extends Component {
                             case ']' : 
                                 if(buffer2.brackets[buffer2.brackets.length-1]!=='['){
                                     setError(i,'Missing \'[\' open brace');
+                                    break;
+                                }
+                                if(followsSymbol(i,[':'])){
+                                    setError(i,'\']\' token cannot follow a colon');
                                     break;
                                 }
                                 buffer2.brackets.pop();
@@ -784,7 +794,15 @@ class JSONInput extends Component {
                         }
                     break;
                     case 'colon' :
-                        //INSERT RULE
+                        const followsOpenningBracket = followsSymbol(i,['[']);
+                        if(followsOpenningBracket&&followedBySymbol(i,[']'])){
+                            setError(i,'Colon can only be wrapped by curly brackets');
+                            break;
+                        }
+                        if(followsOpenningBracket){
+                            setError(i,'Colon cannot follow \'[\' token');
+                            break;
+                        }
                         if(typeFollowed(i)!=='key'){
                             setError(i,'Colon can only follow key');
                             break;
@@ -871,7 +889,7 @@ class JSONInput extends Component {
             //console.log('SPLIT: ',buffer.tokens_split);
             //console.log('FALLBACK: ',buffer.tokens_fallback);
             //console.log('NORMALIZE: ',buffer.tokens_normalize);
-            console.log('MERGE: ',buffer.tokens_merge); //DELETE ME LATER
+            //console.log('MERGE: ',buffer.tokens_merge); //DELETE ME LATER
             if(error) console.log('error:',error); //DELETE ME LATER
 
             if(error) buffer.json = undefined;
