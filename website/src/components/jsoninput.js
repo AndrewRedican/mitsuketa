@@ -756,6 +756,10 @@ class JSONInput extends Component {
                                     setError(i,'Missing \'{\' open curly brace');
                                     break;
                                 }
+                                if(followsSymbol(i,[','])){
+                                    setError(i,'\'}\' token cannot follow a comma');
+                                    break;
+                                }
                                 buffer2.brackets.pop();
                                 buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
                             break;
@@ -772,7 +776,19 @@ class JSONInput extends Component {
                                 buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
                             break;
                             case ',' :
-                                //INSERT RULE
+                                found = followsSymbol(i,['{']);
+                                if(found){
+                                    if(followedBySymbol(i,['}'])){
+                                        setError(i,'Comma can only be wrapped by brackets');
+                                        break;
+                                    }
+                                    setError(i,'Comma cannot follow \'{\' token');
+                                    break;
+                                }
+                                if(followedBySymbol(i,['}'])){
+                                    setError(i,'Comma cannot be followed by \'}\' token');
+                                    break;
+                                }
                                 found = typeFollowed(i);
                                 switch(found){
                                     case 'key' : case 'colon' :
@@ -794,12 +810,12 @@ class JSONInput extends Component {
                         }
                     break;
                     case 'colon' :
-                        const followsOpenningBracket = followsSymbol(i,['[']);
-                        if(followsOpenningBracket&&followedBySymbol(i,[']'])){
+                        found = followsSymbol(i,['[']);
+                        if(found&&followedBySymbol(i,[']'])){
                             setError(i,'Colon can only be wrapped by curly brackets');
                             break;
                         }
-                        if(followsOpenningBracket){
+                        if(found){
                             setError(i,'Colon cannot follow \'[\' token');
                             break;
                         }
