@@ -875,9 +875,9 @@ class JSONInput extends Component {
             
             /**
              * Pending On-Process Validations:
-             * 1. colon cannot exist inside [] 
-             * 2. comma cannot exist inside {} in keyspace
-             * 3. values cannot in key space or keys in value space
+             * 1. comma cannot exist inside {} in keyspace
+             * 2. values cannot in key space or keys in value space
+             * 3. [ { need closing match
              *  
              * Pending Post-Process Validations:
              * 
