@@ -166,7 +166,8 @@ class JSONInput extends Component {
                             overflowY  : 'auto',
                             wordWrap   : 'break-word',
                             whiteSpace : 'pre-line',
-                            color      : '#D4D4D4'
+                            color      : '#D4D4D4',
+                            outline    : 'none'
                         }}
                         dangerouslySetInnerHTML = { this.createMarkup(markupText) }
                         onClick        = { this.onClick }
@@ -184,6 +185,7 @@ class JSONInput extends Component {
     renderErrorMessage(){
         return void(0); // AJRM DELETE ME LATER YOLO ANDREW HELP REVIEW
         const error = this.state.error;
+        console.log('@renderErrorMessage(): error:',error);
         return (
             <p
                 style = {{
@@ -810,7 +812,7 @@ class JSONInput extends Component {
                         }
                         if('string'===type)
                         if(quotes.indexOf(firstChar)===-1 && quotes.indexOf(lastChar)===-1){
-                            setError(i,'String has to be wrapped around quotes');
+                            setError(i,'String must be wrapped by quotes');
                             break;
                         }
                         if('key'===type)
@@ -831,10 +833,13 @@ class JSONInput extends Component {
                         }
                         if(firstChar==="'") string = '"' + string.slice(1,-1) + '"';
                         else if (firstChar!=='"') string = '"' + string + '"';
-                    break;
-                    case 'key' : 
-                        found = followsSymbol(i,['{',',']);
-                        if(!found){
+                        if('key'===type)
+                        if('key'===typeFollowed(i)){
+                            setError(i,'Key containing space must be wrapped by quotes');
+                            break;
+                        }
+                        if('key'===type)
+                        if(!followsSymbol(i,['{',','])){
                             setError(i,'Key can only follow \'{\' or \',\' tokens');
                             break;
                         }
@@ -852,7 +857,6 @@ class JSONInput extends Component {
             
             /**
              * Pending On-Process Validations:
-             * 0. Value and key space identification
              * 1. colon cannot exist inside [] 
              * 2. comma cannot exist inside {} in keyspace
              * 3. values cannot in key space or keys in value space
@@ -865,9 +869,9 @@ class JSONInput extends Component {
              */
             //console.log('PROTO: ',buffer.tokens_proto);
             //console.log('SPLIT: ',buffer.tokens_split);
-            console.log('FALLBACK: ',buffer.tokens_fallback);
-            console.log('NORMALIZE: ',buffer.tokens_normalize);
-            //if(error) console.log('MERGE: ',buffer.tokens_merge); //DELETE ME LATER
+            //console.log('FALLBACK: ',buffer.tokens_fallback);
+            //console.log('NORMALIZE: ',buffer.tokens_normalize);
+            console.log('MERGE: ',buffer.tokens_merge); //DELETE ME LATER
             if(error) console.log('error:',error); //DELETE ME LATER
 
             if(error) buffer.json = undefined;
