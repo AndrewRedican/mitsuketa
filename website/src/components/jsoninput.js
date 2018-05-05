@@ -826,6 +826,7 @@ class JSONInput extends Component {
                             setError(i,'Colon can only follow key');
                             break;
                         }
+                        buffer2.isValue = true;
                     break;
                     case 'key' : case 'string' :
                         let
@@ -880,11 +881,29 @@ class JSONInput extends Component {
                             setError(i,'Key can only follow \'{\' or \',\' tokens');
                             break;
                         }
-                    break;
-                    case 'string' : case 'number' : case 'primitive' :
-                        found = followsSymbol(i,['[',':',',']);
-                        if(!found){
+                        if('string'===type)
+                        if(!followsSymbol(i,['[',':',','])){
                             setError(i,type + ' can only follow \'[\' \':\' \',\' tokens');
+                            break;
+                        }
+                        if('key'===type)
+                        if(buffer2.isValue){
+                            setError(i,'Unexpected key found at value position');
+                            break;
+                        }
+                        if('string'===type)
+                        if(!buffer2.isValue){
+                            setError(i,'Unexpected string found at key position');
+                            break;
+                        }
+                    break;
+                    case 'number' : case 'primitive' :
+                        if(!followsSymbol(i,['[',':',','])){
+                            setError(i,type + ' can only follow \'[\' \':\' \',\' tokens');
+                            break;
+                        }
+                        if(!buffer2.isValue){
+                            setError(i,'Unexpected ' + type + ' found at key position');
                             break;
                         }
                     break;
@@ -921,9 +940,6 @@ class JSONInput extends Component {
                 }
             }
             /**
-             * Pending On-Process Validations:
-             * 1. values cannot in key space or keys in value space
-             *  
              * Pending Post-Process Validations:
              * 
              * 1. Space add at end of key should not create an error based on depth
