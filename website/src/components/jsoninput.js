@@ -720,13 +720,14 @@ class JSONInput extends Component {
                 }
                 return false;
             }
+            let bracketList = [];
             for(var i = 0; i < buffer.tokens_merge.length; i++){
                 if(error) break;
                 let
-                    token      = buffer.tokens_merge[i],
-                    string     = token.string,
-                    type       = token.type,
-                    found      = false;
+                    token  = buffer.tokens_merge[i],
+                    string = token.string,
+                    type   = token.type,
+                    found  = false;
                 switch(type){
                     case 'space' : break;
                     case 'linebreak' : line++; break;
@@ -735,45 +736,42 @@ class JSONInput extends Component {
                             case '{' : case '[' : 
                                 found = followsSymbol(i,['}',']']);
                                 if(found){
-                                    setError(
-                                        i,
-                                        '\'' + buffer.tokens_merge[found].string + '\' token cannot be followed by \'' + 
-                                        string + '\' token'
-                                    );
+                                    setError(i,'\'' + buffer.tokens_merge[found].string + '\' token cannot be followed by \'' + string + '\' token');
                                     break;
                                 }
                                 if(string==='['&&i>0)
                                 if(!followsSymbol(i,[':','[',','])){
-                                    console.log('follows: ' + followsSymbol(i,[':','[',',']));
                                     setError(i,'\'[\' token can only follow \':\', \'[\', and \',\' tokens');
                                     break;
                                 }
                                 buffer2.brackets.push(string);
                                 buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
+                                bracketList.push({ i : i, line : line, string : string });
                             break;
-                            case '}' : 
+                            case '}' : case ']' :
+                                if(string==='}')
                                 if(buffer2.brackets[buffer2.brackets.length-1]!=='{'){
                                     setError(i,'Missing \'{\' open curly brace');
                                     break;
                                 }
+                                if(string==='}')
                                 if(followsSymbol(i,[','])){
                                     setError(i,'\'}\' token cannot follow a comma');
                                     break;
                                 }
-                                buffer2.brackets.pop();
-                                buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
-                            break;
-                            case ']' : 
+                                if(string===']')
                                 if(buffer2.brackets[buffer2.brackets.length-1]!=='['){
                                     setError(i,'Missing \'[\' open brace');
                                     break;
                                 }
+                                if(string===']')
                                 if(followsSymbol(i,[':'])){
                                     setError(i,'\']\' token cannot follow a colon');
                                     break;
                                 }
                                 buffer2.brackets.pop();
                                 buffer2.isValue = buffer2.brackets[buffer2.brackets.length - 1]==='[';
+                                bracketList.push({ i : i, line : line, string : string });
                             break;
                             case ',' :
                                 found = followsSymbol(i,['{']);
@@ -888,12 +886,37 @@ class JSONInput extends Component {
                 }
                 buffer.json += string;
             }
-            
+            const maxIterations = Math.ceil(bracketList.length / 2);
+            let 
+                round = 0,
+                delta = false;
+            function removePair(index){
+                bracketList.splice(index + 1,1);
+                bracketList.splice(index,1);
+                if(!delta) delta = true;
+            }
+            while(bracketList.length>0){
+                delta = false;
+                for(var tokenCount = 0; tokenCount < bracketList.length - 1; tokenCount++){
+                    const pair = bracketList[tokenCount].string + bracketList[tokenCount+1].string;
+                    if(['[]','{}'].indexOf(pair)>-1) removePair(tokenCount);
+                }
+                round++;
+                if(!delta) break;
+                if(round>=maxIterations) break;
+            }
+            if(bracketList.length>0){
+                const
+                    _tokenString        = bracketList[0].string,
+                    _tokenPosition      = bracketList[0].i,
+                    _closingBracketType = _tokenString==='['?']':'}';
+                line = bracketList[0].line;
+                setError(_tokenPosition,'\'' + _tokenString + '\' token is missing closing \'' + _closingBracketType + '\' token');
+            }
             /**
              * Pending On-Process Validations:
-             * 1. comma cannot exist inside {} in keyspace
-             * 2. values cannot in key space or keys in value space
-             * 3. [ { need closing match
+             * 1. values cannot in key space or keys in value space
+             * 2. [ { need closing match
              *  
              * Pending Post-Process Validations:
              * 
@@ -901,11 +924,7 @@ class JSONInput extends Component {
              * 2. Check for * 'undefined' primitive types && consecutive commas to * add/set nulls
              * to make valid json
              */
-            //console.log('PROTO: ',buffer.tokens_proto);
-            //console.log('SPLIT: ',buffer.tokens_split);
-            //console.log('FALLBACK: ',buffer.tokens_fallback);
-            //console.log('NORMALIZE: ',buffer.tokens_normalize);
-            //console.log('MERGE: ',buffer.tokens_merge); //DELETE ME LATER
+            //console.log('MERGE: ',buffer.tokens_merge);
             if(error) console.log('error:',error); //DELETE ME LATER
 
             if(error) buffer.json = undefined;
