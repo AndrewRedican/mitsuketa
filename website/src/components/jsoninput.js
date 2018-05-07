@@ -183,9 +183,8 @@ class JSONInput extends Component {
         );
     }
     renderErrorMessage(){
-        return void(0); // AJRM DELETE ME LATER YOLO ANDREW HELP REVIEW
         const error = this.state.error;
-        console.log('@renderErrorMessage(): error:',error);
+        if(!error) return void(0);
         return (
             <p
                 style = {{
@@ -204,9 +203,7 @@ class JSONInput extends Component {
                     justifyContent : 'center'
                 }}
             >
-            { error.token ? 'Unexpected token: ( ' + error.token + ' ) at line ' + error.line + ' character ' + error.charPosition_relative : ' ' }
-            { error.token ? <br/> : void(0) }
-            { error.token ? error.reason : ' ' }
+            { error.reason + ' at line ' + error.line }
             </p>
         );
     }
@@ -788,8 +785,8 @@ class JSONInput extends Component {
                                     setError(i,'Comma cannot follow \'{\' token');
                                     break;
                                 }
-                                if(followedBySymbol(i,['}'])){
-                                    setError(i,'Comma cannot be followed by \'}\' token');
+                                if(followedBySymbol(i,['}',',',']'])){
+                                    setError(i,'Values are always specified. Comma cannot be followed by \'}\', \']\' tokens or another comma');
                                     break;
                                 }
                                 found = typeFollowed(i);
@@ -799,8 +796,7 @@ class JSONInput extends Component {
                                         break;
                                     break;
                                     case 'symbol' :
-                                        found = followsSymbol(i,['{']);
-                                        if(found){
+                                        if(followsSymbol(i,['{'])){
                                             setError(i,'Comma cannot follow \'{\' token');
                                             break;
                                         }
@@ -898,7 +894,7 @@ class JSONInput extends Component {
                             setError(i,'Unexpected string found at key position');
                             break;
                         }
-                        buffer.json += string; //.replace(/\'/g,"\\'").replace(/\"/g,'\\"')
+                        buffer.json += string;
                     break;
                     case 'number' : case 'primitive' :
                         if(!followsSymbol(i,['[',':',','])){
@@ -909,6 +905,9 @@ class JSONInput extends Component {
                             setError(i,'Unexpected ' + type + ' found at key position');
                             break;
                         }
+                        if(type==='primitive')
+                        if(string==='undefined')
+                        setError(i,'\'undefined\' token is not accepted. Use \'null\' token instead');
                         buffer.json += string;
                     break;
                 }
@@ -942,27 +941,9 @@ class JSONInput extends Component {
                     setError(_tokenPosition,'\'' + _tokenString + '\' token is missing closing \'' + _closingBracketType + '\' token');
                 }
             }
-
-            /*
-                Additional Validations:
-
-                1)
-                consider keys and strings with following scenario:
-                test = {
-                    'hello/world' : true,
-                    'hah"' : true,
-                    "hah'" : true,
-                    'ooop\'s yarg' : true,
-                    "ooops\" norg" : true
-                }
-
-                2) Replace undefined with null
-            */
-
             if(!error)
-            try{
-                buffer.jsObject = JSON.parse(buffer.json);
-            }catch(err){
+            try{ buffer.jsObject = JSON.parse(buffer.json); }
+            catch(err){
                 const 
                     errorMessage = err.message,
                     subsMark   = errorMessage.indexOf('position');
@@ -979,19 +960,19 @@ class JSONInput extends Component {
                     token = buffer.tokens_merge[tokenIndex];
                     if('linebreak'===token.type) _line++;
                     if(['space','linebreak'].indexOf(token.type)===-1) charTotal += token.string.length;
+                    if(charTotal >= errPosition) break;
                     tokenIndex++;
                 }
                 line = _line;
                 setError(tokenIndex,'Unexpected token \'' + token.string + '\' found');
             }
-
-            if(!error)
-            try { 
-                buffer.jsObject = JSON.parse(buffer.json);
-
+            if(error) buffer.json = undefined;
+            if(!error){
                 /**
                  * Adjust spacing
                  * Check Depth
+                 * 
+                 * Space add at end of key should not create an error based on depth
                  */
                 let depth = 0;
                 buffer.tokens_merge.forEach( function(token,i) {
@@ -1014,27 +995,7 @@ class JSONInput extends Component {
                         default : break;
                     }
                 });
-
-            
-            
-            } catch(error){ 
-
-                console.log('err:',error);
-
-                //buffer.tokens_merge
             }
-
-            if(error) console.log('error:',error); //DELETE ME LATER
-
-            /**
-             * Pending Post-Process Validations:
-             * 
-             * 
-             * 1. Space add at end of key should not create an error based on depth
-             * 2. Check for * 'undefined' primitive types && consecutive commas to * add/set nulls
-             * to make valid json
-             */
-
 
             let lines = buffer.tokens_merge.length > 0 ? 1 : 0;
             buffer.tokens_merge.forEach( function(token,i) {
@@ -1059,15 +1020,16 @@ class JSONInput extends Component {
             });
 
             buffer.tokens_merge.forEach( function(token) { buffer.indented += token.string; });
-
+            console.log('markup:',buffer.markup);
             return {
                 tokens   : buffer.tokens_merge,
                 noSpaces : buffer.tokens_plainText,
                 indented : buffer.indented,
-                json     : '{}',
-                jsObject : {},
+                json     : buffer.json,
+                jsObject : buffer.jsObject,
                 markup   : buffer.markup,
-                lines    : lines
+                lines    : lines,
+                error    : error
             };
         };
 
