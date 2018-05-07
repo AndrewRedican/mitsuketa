@@ -13,6 +13,9 @@ class JSONInput extends Component {
         this.onScroll           = this.onScroll            .bind(this);
         this.showPlaceholder    = this.showPlaceholder     .bind(this);
         this.tokenize           = this.tokenize            .bind(this);
+        this.onKeyPress         = this.onKeyPress          .bind(this);
+        this.onKeyDown          = this.onKeyDown           .bind(this);
+        this.stopEvent          = this.stopEvent           .bind(this);
         let colors = {};
         if('colors' in this.props)
             colors = {
@@ -81,12 +84,12 @@ class JSONInput extends Component {
                 >
                     <span
                         style = {{
-                            display : 'inline-block',
-                            height  : '60px',
-                            width   : '60px',
-                            margin  : 0,
-                            boxSizing : 'border-box',
-                            overflow : 'hidden',
+                            display       : 'inline-block',
+                            height        : '60px',
+                            width         : '60px',
+                            margin        : 0,
+                            boxSizing     : 'border-box',
+                            overflow      : 'hidden',
                             verticalAlign : 'top'
                         }} 
                     >
@@ -194,6 +197,8 @@ class JSONInput extends Component {
                             outline    : 'none'
                         }}
                         dangerouslySetInnerHTML = { this.createMarkup(markupText) }
+                        onKeyPress     = { this.onKeyPress }
+                        onKeyDown      = { this.onKeyDown }
                         onClick        = { this.onClick }
                         onBlur         = { this.onBlur }
                         onScroll       = { this.onScroll }
@@ -278,8 +283,23 @@ class JSONInput extends Component {
             error      : data.error
         });
     }
-    onClick(){ this.state = { focused : true }; }
-    onBlur(){ if(this.state.focused) this.update(); }
+    stopEvent(event){
+
+    }
+    onKeyPress(event){
+        console.log(event);
+    }
+    onKeyDown(event){
+        console.log(event);
+    }
+    onClick(){ 
+        if('viewOnly' in this.props) if(this.props.viewOnly) return;
+        this.state = { focused : true };
+    }
+    onBlur(){
+        if('viewOnly' in this.props) if(this.props.viewOnly) return;
+        if(this.state.focused) this.update();
+    }
     onScroll(event){
         var labels = document.getElementById('ared7_jsonviewer_labels' + this.props.id);
         labels.scrollTop = event.target.scrollTop;
