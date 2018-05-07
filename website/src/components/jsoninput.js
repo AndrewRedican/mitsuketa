@@ -308,12 +308,12 @@ class JSONInput extends Component {
                 tokens_fallback  : [],
                 tokens_normalize : [],
                 tokens_merge     : [],
-                tokens_markup    : [],
                 tokens_plainText : '',
-                markup           : '',
                 indented         : '',
                 json             : '',
-                jsObject         : undefined
+                jsObject         : undefined,
+                tokens_markup    : [],
+                markup           : ''
             }
             children.forEach(function(child,i){
                 let info = {};
@@ -811,6 +811,7 @@ class JSONInput extends Component {
                             break;
                             default : break;
                         }
+                        buffer.json += string;
                     break;
                     case 'colon' :
                         found = followsSymbol(i,['[']);
@@ -827,6 +828,7 @@ class JSONInput extends Component {
                             break;
                         }
                         buffer2.isValue = true;
+                        buffer.json += string;
                     break;
                     case 'key' : case 'string' :
                         let
@@ -896,6 +898,7 @@ class JSONInput extends Component {
                             setError(i,'Unexpected string found at key position');
                             break;
                         }
+                        buffer.json += string; //.replace(/\'/g,"\\'").replace(/\"/g,'\\"')
                     break;
                     case 'number' : case 'primitive' :
                         if(!followsSymbol(i,['[',':',','])){
@@ -906,9 +909,9 @@ class JSONInput extends Component {
                             setError(i,'Unexpected ' + type + ' found at key position');
                             break;
                         }
+                        buffer.json += string;
                     break;
                 }
-                buffer.json += string;
             }
             if(!error){
                 const maxIterations = Math.ceil(bracketList.length / 2);
@@ -939,20 +942,49 @@ class JSONInput extends Component {
                     setError(_tokenPosition,'\'' + _tokenString + '\' token is missing closing \'' + _closingBracketType + '\' token');
                 }
             }
-            /**
-             * Pending Post-Process Validations:
-             * 
-             * 1. Space add at end of key should not create an error based on depth
-             * 2. Check for * 'undefined' primitive types && consecutive commas to * add/set nulls
-             * to make valid json
-             */
-            //console.log('MERGE: ',buffer.tokens_merge);
-            if(error) console.log('error:',error); //DELETE ME LATER
 
-            if(error) buffer.json = undefined;
+            /*
+                Additional Validations:
 
-            
-            
+                1)
+                consider keys and strings with following scenario:
+                test = {
+                    'hello/world' : true,
+                    'hah"' : true,
+                    "hah'" : true,
+                    'ooop\'s yarg' : true,
+                    "ooops\" norg" : true
+                }
+
+                2) Replace undefined with null
+            */
+
+            if(!error)
+            try{
+                buffer.jsObject = JSON.parse(buffer.json);
+            }catch(err){
+                const 
+                    errorMessage = err.message,
+                    subsMark   = errorMessage.indexOf('position');
+                if(subsMark===-1) throw new Error('Error parsing failed');
+                const
+                    errPositionStr = errorMessage.substring(subsMark + 9,errorMessage.length),
+                    errPosition    = parseInt(errPositionStr);
+                let
+                    charTotal  = 0,
+                    tokenIndex = 0,
+                    token      = false,
+                    _line      = 1;
+                while(charTotal < errPosition){
+                    token = buffer.tokens_merge[tokenIndex];
+                    if('linebreak'===token.type) _line++;
+                    if(['space','linebreak'].indexOf(token.type)===-1) charTotal += token.string.length;
+                    tokenIndex++;
+                }
+                line = _line;
+                setError(tokenIndex,'Unexpected token \'' + token.string + '\' found');
+            }
+
             if(!error)
             try { 
                 buffer.jsObject = JSON.parse(buffer.json);
@@ -985,7 +1017,24 @@ class JSONInput extends Component {
 
             
             
-            } catch(error){ }
+            } catch(error){ 
+
+                console.log('err:',error);
+
+                //buffer.tokens_merge
+            }
+
+            if(error) console.log('error:',error); //DELETE ME LATER
+
+            /**
+             * Pending Post-Process Validations:
+             * 
+             * 
+             * 1. Space add at end of key should not create an error based on depth
+             * 2. Check for * 'undefined' primitive types && consecutive commas to * add/set nulls
+             * to make valid json
+             */
+
 
             let lines = buffer.tokens_merge.length > 0 ? 1 : 0;
             buffer.tokens_merge.forEach( function(token,i) {
