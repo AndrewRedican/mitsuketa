@@ -13,7 +13,31 @@ class JSONInput extends Component {
         this.onScroll           = this.onScroll            .bind(this);
         this.showPlaceholder    = this.showPlaceholder     .bind(this);
         this.tokenize           = this.tokenize            .bind(this);
-        this.state   = { 
+        let colors = {};
+        if('colors' in this.props)
+            colors = {
+                default         : 'default'         in this.props.colors ? this.props.colors.default         : '#D4D4D4',
+                string          : 'string'          in this.props.colors ? this.props.colors.string          : '#CE8453',
+                number          : 'number'          in this.props.colors ? this.props.colors.number          : '#B5CE9F',
+                colon           : 'colon'           in this.props.colors ? this.props.colors.colon           : '#49B8F7',
+                keys            : 'keys'            in this.props.colors ? this.props.colors.keys            : '#9CDCFE',
+                keys_whiteSpace : 'keys_whiteSpace' in this.props.colors ? this.props.colors.keys_whiteSpace : '#AF74A5',
+                primitive       : 'primitive'       in this.props.colors ? this.props.colors.primitive       : '#6392C6',
+                error           : 'error'           in this.props.colors ? this.props.colors.error           : '#ED0000'
+            };
+        else
+            colors = {
+                default         : '#D4D4D4',
+                string          : '#CE8453',
+                number          : '#B5CE9F',
+                colon           : '#49B8F7',
+                keys            : '#9CDCFE',
+                keys_whiteSpace : '#AF74A5',
+                primitive       : '#6392C6',
+                error           : '#ED0000'
+            };
+        this.colors = colors;
+        this.state  = { 
             preText     : '',
             markupText  : '',
             plainText   : '',
@@ -244,7 +268,7 @@ class JSONInput extends Component {
     update(){
         const
             container = document.getElementById('ared7_jsonviewer_body' + this.props.id),
-            data      = this.tokenize(container,this.props.colors);   
+            data      = this.tokenize(container);   
         this.setState({
             plainText  : data.indentation,
             markupText : data.markup,
@@ -275,7 +299,7 @@ class JSONInput extends Component {
         const placeholder = this.props.placeholder;
         if(preText===placeholder) return;
         if(typeof placeholder !== 'object') return console.error('placeholder in props is not an object:',placeholder);
-        const data = this.tokenize(placeholder,this.props.colors);
+        const data = this.tokenize(placeholder);
         this.setState({
             preText    : placeholder,
             plainText  : data.indentation,
@@ -284,7 +308,7 @@ class JSONInput extends Component {
             error      : data.error
         });
     }
-    tokenize(something,themeColors={}){
+    tokenize(something){
         if(typeof something !== 'object') return console.error('tokenize() expects object type properties only. Got \'' + typeof something + '\' type instead.');
 
         /**
@@ -600,16 +624,6 @@ class JSONInput extends Component {
                 }
                 buffer.tokens_normalize.push(normalToken);
             });
-            const colors = {
-                default         : 'default'         in themeColors ? themeColors.default         : '#D4D4D4',
-                string          : 'string'          in themeColors ? themeColors.string          : '#CE8453',
-                number          : 'number'          in themeColors ? themeColors.number          : '#B5CE9F',
-                colon           : 'colon'           in themeColors ? themeColors.colon           : '#49B8F7',
-                keys            : 'keys'            in themeColors ? themeColors.keys            : '#9CDCFE',
-                keys_whiteSpace : 'keys_whiteSpace' in themeColors ? themeColors.keys_whiteSpace : '#AF74A5',
-                primitive       : 'primitive'       in themeColors ? themeColors.primitive       : '#6392C6',
-                error           : 'error'           in themeColors ? themeColors.error           : '#ED0000'
-            };
             for(var i = 0; i < buffer.tokens_normalize.length; i++){
                 const token = buffer.tokens_normalize[i];
                 let mergedToken = {
@@ -997,29 +1011,84 @@ class JSONInput extends Component {
                 });
             }
 
-            let lines = buffer.tokens_merge.length > 0 ? 1 : 0;
-            buffer.tokens_merge.forEach( function(token,i) {
-                let span = '', color = colors.default;
-                switch(token.type){
-                    case 'space'     : for( var i = 0; i < token.string.length; i++) span += '&nbsp;'; break;
-                    case 'linebreak' : span = '<br/>'; lines++; break;
-                    default :
-                        for(var i = 0; i < token.string.length; i++) if(token.string.charAt(i)==='\n') lines++;
-                        span = '<span id="' + i + '" type="'  + token.type + '" style="color:';
-                        if(['string','number','primitive','colon','error'].indexOf(token.type) > -1) color = colors[token.type];
-                        else if(token.type==='key')
-                                if(token.string.indexOf(' ') > -1) color = colors.keys_whiteSpace; else color = colors.keys;
-                        else if(token.string===':') color = colors.colon;
-                        span += color + '">' + token.string + '</span>';
-                        buffer.tokens_plainText += token.string;
-
+            const colors = this.colors;
+            let
+                _line   = 1,
+                _depth  = 0,
+                _markup = '';
+            function newSpan(token, colors){
+                const
+                    type   = token.type,
+                    string = token.string;
+                let color = '';
+                switch(type){
+                    case 'string' : case 'number' : case 'primitive' : case 'error' :     color = colors[token.type]; break;
+                    case 'key'    : if(string===' ') color = colors.keys_whiteSpace; else color = colors.keys;        break;
+                    case 'symbol' : if(string===':') color = colors.colon;           else color = colors.default;     break;
+                    default : color = colors.default; break;
+                }
+                return (
+                    '<span id="' + i + 
+                        '" type="'  + type  + 
+                        '" value="' + string + 
+                        '" depth="' + _depth + 
+                        '" style="color:' + color +
+                    '">' + string + '</span>'
+                );
+            }
+            function newIndent(){
+                var space = []; 
+                for (var i = 0; i < _depth * 2; i++) space.push('&nbsp;'); 
+                return space.join('');
+            }
+            function newLineBreak(byPass=false){
+                if(_depth > 0 || byPass){ _line++; return '<br>'; }
+                return '';
+            }
+            function newLineBreakAndIndent(byPass=false){ 
+                return newLineBreak(byPass) + newIndent();
+            };
+            for(var i = 0; i < buffer.tokens_merge.length; i++){
+                const
+                    token  = buffer.tokens_merge[i],
+                    string = token.string,
+                    type   = token.type;
+                switch(type){
+                    case 'space' : case 'linebreak' : break;
+                    case 'string' : case 'number'    : case 'primitive' : case 'error' : 
+                        _markup += ((followsSymbol(i,[',','[']) ? newLineBreakAndIndent() : '') + newSpan(token,colors)); 
+                    break;
+                    case 'key' :
+                        _markup += (newLineBreakAndIndent() + newSpan(token,colors));
+                    break;
+                    case 'colon' :
+                        _markup += (newSpan(token,colors) + '&nbsp;');
+                    break;
+                    case 'symbol' :
+                        switch(string){
+                            case '[' : case '{' :
+                                _markup += ((!followsSymbol(i,[':']) ? newLineBreakAndIndent() : '') + newSpan(token,colors)); _depth++;
+                            break;
+                            case ']' : case '}' :
+                                _depth--;
+                                const
+                                    islastToken  = i === buffer.tokens_merge.length - 1,
+                                    _adjustment = i > 0 ? ['[','{'].indexOf(buffer.tokens_merge[i-1].string)>-1  ? '' : newLineBreakAndIndent(islastToken) : '';
+                                _markup += (_adjustment + newSpan(token,colors));
+                            break;
+                            case ',' :
+                                _markup += newSpan(token,colors);
+                            break;
+                        }
                     break;
                 }
-                buffer.markup += span;
-                buffer.tokens_markup.push(span);
-            });
+            }
+
+            // buffer.tokens_markup.push(span);
 
             buffer.tokens_merge.forEach( function(token) { buffer.indented += token.string; });
+
+            buffer.markup = _markup;
             console.log('markup:',buffer.markup);
             return {
                 tokens   : buffer.tokens_merge,
@@ -1028,7 +1097,7 @@ class JSONInput extends Component {
                 json     : buffer.json,
                 jsObject : buffer.jsObject,
                 markup   : buffer.markup,
-                lines    : lines,
+                lines    : _line,
                 error    : error
             };
         };
@@ -1253,16 +1322,7 @@ class JSONInput extends Component {
                 json_status = 'OK',
                 jsObject_status = 'OK';
             } catch(e) { }
-            const colors = {
-                default         : 'default'         in themeColors ? themeColors.default         : '#D4D4D4',
-                string          : 'string'          in themeColors ? themeColors.string          : '#CE8453',
-                number          : 'number'          in themeColors ? themeColors.number          : '#B5CE9F',
-                colon           : 'colon'           in themeColors ? themeColors.colon           : '#49B8F7',
-                keys            : 'keys'            in themeColors ? themeColors.keys            : '#9CDCFE',
-                keys_whiteSpace : 'keys_whiteSpace' in themeColors ? themeColors.keys_whiteSpace : '#AF74A5',
-                primitive       : 'primitive'       in themeColors ? themeColors.primitive       : '#6392C6',
-                error           : 'error'           in themeColors ? themeColors.error           : '#ED0000'
-            };
+            const colors = this.colors;
             let lines = 0;
             function indentII(number) { 
                 var space = []; 
