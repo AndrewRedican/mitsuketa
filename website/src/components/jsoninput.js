@@ -333,7 +333,6 @@ class JSONInput extends Component {
                 indented         : '',
                 json             : '',
                 jsObject         : undefined,
-                tokens_markup    : [],
                 markup           : ''
             }
             children.forEach(function(child,i){
@@ -1014,8 +1013,7 @@ class JSONInput extends Component {
             const colors = this.colors;
             let
                 _line   = 1,
-                _depth  = 0,
-                _markup = '';
+                _depth  = 0;
             function newSpan(token, colors){
                 const
                     type   = token.type,
@@ -1042,7 +1040,8 @@ class JSONInput extends Component {
                 return space.join('');
             }
             function newLineBreak(byPass=false){
-                if(_depth > 0 || byPass){ _line++; return '<br>'; }
+                _line++;
+                if(_depth > 0 || byPass){ return '<br>'; }
                 return '';
             }
             function newLineBreakAndIndent(byPass=false){ 
@@ -1056,40 +1055,34 @@ class JSONInput extends Component {
                 switch(type){
                     case 'space' : case 'linebreak' : break;
                     case 'string' : case 'number'    : case 'primitive' : case 'error' : 
-                        _markup += ((followsSymbol(i,[',','[']) ? newLineBreakAndIndent() : '') + newSpan(token,colors)); 
+                        buffer.markup += ((followsSymbol(i,[',','[']) ? newLineBreakAndIndent() : '') + newSpan(token,colors)); 
                     break;
                     case 'key' :
-                        _markup += (newLineBreakAndIndent() + newSpan(token,colors));
+                        buffer.markup += (newLineBreakAndIndent() + newSpan(token,colors));
                     break;
                     case 'colon' :
-                        _markup += (newSpan(token,colors) + '&nbsp;');
+                        buffer.markup += (newSpan(token,colors) + '&nbsp;');
                     break;
                     case 'symbol' :
                         switch(string){
                             case '[' : case '{' :
-                                _markup += ((!followsSymbol(i,[':']) ? newLineBreakAndIndent() : '') + newSpan(token,colors)); _depth++;
+                                buffer.markup += ((!followsSymbol(i,[':']) ? newLineBreakAndIndent() : '') + newSpan(token,colors)); _depth++;
                             break;
                             case ']' : case '}' :
                                 _depth--;
                                 const
                                     islastToken  = i === buffer.tokens_merge.length - 1,
                                     _adjustment = i > 0 ? ['[','{'].indexOf(buffer.tokens_merge[i-1].string)>-1  ? '' : newLineBreakAndIndent(islastToken) : '';
-                                _markup += (_adjustment + newSpan(token,colors));
+                                buffer.markup += (_adjustment + newSpan(token,colors));
                             break;
                             case ',' :
-                                _markup += newSpan(token,colors);
+                                buffer.markup += newSpan(token,colors);
                             break;
                         }
                     break;
                 }
             }
-
-            // buffer.tokens_markup.push(span);
-
             buffer.tokens_merge.forEach( function(token) { buffer.indented += token.string; });
-
-            buffer.markup = _markup;
-            console.log('markup:',buffer.markup);
             return {
                 tokens   : buffer.tokens_merge,
                 noSpaces : buffer.tokens_plainText,
