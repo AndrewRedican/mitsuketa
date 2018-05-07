@@ -1265,7 +1265,8 @@ class JSONInput extends Component {
                 for (var i = 0; i < number * 2; i++) space.push(' ');
                 return (number > 0 ? '\n' : '') + space.join('');
             };
-            let indentation = ''; buffer2.tokens.forEach( (token,i) => { 
+            let indentation = '';
+            buffer2.tokens.forEach( (token,i) => { 
                 switch(token.string){
                     case '[' : case '{' : 
                         const nextToken = i < (buffer2.tokens.length - 1) - 1 ? buffer2.tokens[i+1] : '';
@@ -1306,25 +1307,17 @@ class JSONInput extends Component {
                     default : json += token.string; break;
                 }
             });
-            let 
-                json_status = 'FAIL',
-                jsObject_status = 'FAIL',
-                jsObject = undefined;
-            try { 
-                jsObject = JSON.parse(json);
-                json_status = 'OK',
-                jsObject_status = 'OK';
-            } catch(e) { }
+            let jsObject = JSON.parse(json);
             const colors = this.colors;
-            let lines = 0;
-            function indentII(number) { 
+            let lines = 1;
+            function indentII(number){ 
                 var space = []; 
                 if(number > 0 ) lines++;
                 for (var i = 0; i < number * 2; i++) space.push('&nbsp;'); 
                 return (number > 0 ? '<br>' : '') + space.join('');
             };
             let markup = ''; 
-            if(buffer2.tokens.length > 0) lines++;
+            const lastIndex = buffer2.tokens.length - 1;
             buffer2.tokens.forEach( (token, i) => {
                 let span = (
                     '<span id="' + i +
@@ -1350,7 +1343,7 @@ class JSONInput extends Component {
                     case '}' : case ']' :
                         const prevToken = i > 0 ? buffer2.tokens[i-1] : '';
                         if('[{'.indexOf(prevToken.string)===-1)
-                            markup += indentII(token.depth) + span;
+                            markup += indentII(token.depth) + ( lastIndex === i ? '<br>' : '' ) + span;
                         else
                             markup += span;
                         break;
@@ -1359,6 +1352,7 @@ class JSONInput extends Component {
                     default  : markup += span; break;
                 }
             });
+            lines += 2;
             return {
                 tokens   : buffer2.tokens,
                 noSpaces : clean,
