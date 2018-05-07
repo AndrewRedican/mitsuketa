@@ -999,7 +999,7 @@ class JSONInput extends Component {
 
             let lines = buffer.tokens_merge.length > 0 ? 1 : 0;
             buffer.tokens_merge.forEach( function(token,i) {
-                let span = '', color = '';
+                let span = '', color = colors.default;
                 switch(token.type){
                     case 'space'     : for( var i = 0; i < token.string.length; i++) span += '&nbsp;'; break;
                     case 'linebreak' : span = '<br/>'; lines++; break;
