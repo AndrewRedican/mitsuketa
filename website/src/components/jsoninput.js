@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class JSONInput extends Component {
     constructor(props){
         super(props);
-        if(!('id' in this.props)) console.error('An \'id\' property must be specified. Must be unique');
+        if(!('id' in this.props)) throw 'An \'id\' property must be specified. Must be unique';
         this.createMarkup       = this.createMarkup        .bind(this);
         this.onClick            = this.onClick             .bind(this);
         this.onBlur             = this.onBlur              .bind(this);
@@ -16,6 +16,7 @@ class JSONInput extends Component {
         this.onKeyPress         = this.onKeyPress          .bind(this);
         this.onKeyDown          = this.onKeyDown           .bind(this);
         this.stopEvent          = this.stopEvent           .bind(this);
+        this.uniqueID           = 'AJRM-JSON-EDITOR' + this.props.id;
         let colors = {};
         if('colors' in this.props)
             colors = {
@@ -51,18 +52,37 @@ class JSONInput extends Component {
             focused     : false
         };
     }
+    /*
+
+                                            <path
+                                                fillRule = 'evenodd' 
+                                                clipRule = 'evenodd'
+                                                fill     = 'green'
+                                                d='M39.363,79L16,55.49l11.347-11.419L39.694,56.49L72.983,23L84,34.085L39.363,79z'
+                                            />
+
+    */
     render(){
         const 
             markupText = this.state.markupText,
             error      = this.state.error,
-            focused    = this.state.focused;
-        const hasError = error ? error.token ? true : false : false;
+            focused    = this.state.focused,
+            uniqueID   = this.uniqueID;
+        const
+            hasError    = error ? error.token ? true : false : false,
+            totalHeight = 'height' in this.props ? (parseInt(this.props.height.replace(/px/,'')) + 60) + 'px' : '610px',
+            bodyHeight  =  (parseInt(totalHeight.replace(/px/,'')) - 60) + 'px';
+
+        //errorMessageStyle
+        
         return (
             <div
+                name  = 'container'
+                id    = {uniqueID + '-container'}
                 style = {{
                     display    : 'block',
                     overflow   : 'none',
-                    height     : 'height' in this.props ? (parseInt(this.props.height.replace(/px/,'')) + 60) + 'px' : '610px',
+                    height     : totalHeight,
                     width      : '479px',
                     margin     : 0,
                     boxSizing  : 'border-box',
@@ -71,15 +91,18 @@ class JSONInput extends Component {
                 }}
             >
                 <div
-                    className = 'row text-left vertical-align-bottom'
+                    name  = 'warning-box'
+                    id    = {uniqueID + '-warning-box'}
                     style = {{
-                        display         : 'block',
-                        overflow        : 'none',
-                        height          : '60px',
-                        width           : '479px',
-                        margin          : 0,
-                        backgroundColor : 'colors' in this.props ? 'background' in this.props.colors ? this.props.colors.background : '#1E1E1E' : '#1E1E1E',
-                        borderBottom    : '2px solid #f4433680'
+                        display                  : 'block',
+                        overflow                 : 'hidden',
+                        height                   : hasError ? '60px' : '0px',
+                        width                    : '479px',
+                        margin                   : 0,
+                        backgroundColor          : 'colors' in this.props ? 'background' in this.props.colors ? this.props.colors.background : '#1E1E1E' : '#1E1E1E',
+                        borderBottom             : '2px solid #f4433680',
+                        transitionDuration       : '0.2s',
+                        transitionTimingFunction : 'cubic-bezier(0, 1, 0.5, 1)'
                     }}
                 >
                     <span
@@ -90,25 +113,28 @@ class JSONInput extends Component {
                             margin        : 0,
                             boxSizing     : 'border-box',
                             overflow      : 'hidden',
-                            verticalAlign : 'top'
+                            verticalAlign : 'top',
+                            pointerEvents : 'none'
                         }} 
                     >
                         <div
                             style = {{
-                                position : 'relative',
-                                top      : 0,
-                                left     : 0,
-                                height   : '60px',
-                                width    : '60px',
-                                margin   : 0
+                                position      : 'relative',
+                                top           : 0,
+                                left          : 0,
+                                height        : '60px',
+                                width         : '60px',
+                                margin        : 0,
+                                pointerEvents : 'none'
                             }}
                         >
                             <div
                                 style = {{
-                                    position  : 'absolute',
-                                    top       : '50%',
-                                    left      : '50%',
-                                    transform : 'translate(-50%, -50%)'
+                                    position      : 'absolute',
+                                    top           : '50%',
+                                    left          : '50%',
+                                    transform     : 'translate(-50%, -50%)',
+                                    pointerEvents : 'none'
                                 }}
                             >
                                 <svg
@@ -116,22 +142,12 @@ class JSONInput extends Component {
                                     width  = '25px'
                                     viewBox = '0 0 100 100'
                                 >
-                                    {
-                                        hasError ?
-                                            <path 
-                                                fillRule ='evenodd'
-                                                clipRule ='evenodd'
-                                                fill     = 'red'
-                                                d        = 'M73.9,5.75c0.467-0.467,1.067-0.7,1.8-0.7c0.7,0,1.283,0.233,1.75,0.7l16.8,16.8  c0.467,0.5,0.7,1.084,0.7,1.75c0,0.733-0.233,1.334-0.7,1.801L70.35,50l23.9,23.95c0.5,0.467,0.75,1.066,0.75,1.8  c0,0.667-0.25,1.25-0.75,1.75l-16.8,16.75c-0.534,0.467-1.117,0.7-1.75,0.7s-1.233-0.233-1.8-0.7L50,70.351L26.1,94.25  c-0.567,0.467-1.167,0.7-1.8,0.7c-0.667,0-1.283-0.233-1.85-0.7L5.75,77.5C5.25,77,5,76.417,5,75.75c0-0.733,0.25-1.333,0.75-1.8  L29.65,50L5.75,26.101C5.25,25.667,5,25.066,5,24.3c0-0.666,0.25-1.25,0.75-1.75l16.8-16.8c0.467-0.467,1.05-0.7,1.75-0.7  c0.733,0,1.333,0.233,1.8,0.7L50,29.65L73.9,5.75z'
-                                            />
-                                        :
-                                            <path
-                                                fillRule = 'evenodd' 
-                                                clipRule = 'evenodd'
-                                                fill     = 'green'
-                                                d='M39.363,79L16,55.49l11.347-11.419L39.694,56.49L72.983,23L84,34.085L39.363,79z'
-                                            />
-                                    }
+                                    <path 
+                                        fillRule ='evenodd'
+                                        clipRule ='evenodd'
+                                        fill     = 'red'
+                                        d        = 'M73.9,5.75c0.467-0.467,1.067-0.7,1.8-0.7c0.7,0,1.283,0.233,1.75,0.7l16.8,16.8  c0.467,0.5,0.7,1.084,0.7,1.75c0,0.733-0.233,1.334-0.7,1.801L70.35,50l23.9,23.95c0.5,0.467,0.75,1.066,0.75,1.8  c0,0.667-0.25,1.25-0.75,1.75l-16.8,16.75c-0.534,0.467-1.117,0.7-1.75,0.7s-1.233-0.233-1.8-0.7L50,70.351L26.1,94.25  c-0.567,0.467-1.167,0.7-1.8,0.7c-0.667,0-1.283-0.233-1.85-0.7L5.75,77.5C5.25,77,5,76.417,5,75.75c0-0.733,0.25-1.333,0.75-1.8  L29.65,50L5.75,26.101C5.25,25.667,5,25.066,5,24.3c0-0.666,0.25-1.25,0.75-1.75l16.8-16.8c0.467-0.467,1.05-0.7,1.75-0.7  c0.733,0,1.333,0.233,1.8,0.7L50,29.65L73.9,5.75z'
+                                    />
                                 </svg>
                             </div>
                         </div>
@@ -144,28 +160,33 @@ class JSONInput extends Component {
                             margin        : 0,
                             overflow      : 'hidden',
                             verticalAlign : 'top',
-                            position      : 'absolute'
+                            position      : 'absolute',
+                            pointerEvents : 'none'
                         }}    
                     >
                         { this.renderErrorMessage() }
                     </span>
                 </div>
                 <div
-                    className = 'row'
+                    name  = 'body'
+                    id    = {uniqueID + '-body'}
                     style = {{
-                        display         : 'block',
-                        overflow        : 'none',
-                        height          : 'height' in this.props ? this.props.height : '550px',
-                        width           : '479px',
-                        margin          : 0,
-                        resize          : 'none',
-                        fontFamily      : 'Roboto Mono, Monaco, monospace',
-                        fontSize        : '11px',
-                        backgroundColor : 'colors' in this.props ? 'background' in this.props.colors ? this.props.colors.background : '#1E1E1E' : '#1E1E1E'
+                        display                  : 'block',
+                        overflow                 : 'none',
+                        height                   : hasError ? bodyHeight : totalHeight,
+                        width                    : '479px',
+                        margin                   : 0,
+                        resize                   : 'none',
+                        fontFamily               : 'Roboto Mono, Monaco, monospace',
+                        fontSize                 : '11px',
+                        backgroundColor          : 'colors' in this.props ? 'background' in this.props.colors ? this.props.colors.background : '#1E1E1E' : '#1E1E1E',
+                        transitionDuration       : '0.2s',
+                        transitionTimingFunction : 'cubic-bezier(0, 1, 0.5, 1)'
                     }}
                 >
                     <div
-                        id = {'ared7_jsonviewer_labels' + this.props.id}
+                        name  = 'label'
+                        id    = {uniqueID + '-labels'}
                         style = {{
                             display   : 'inline-block',
                             boxSizing : 'border-box',
@@ -180,7 +201,7 @@ class JSONInput extends Component {
                     { this.renderLabels() }
                     </div>
                     <div
-                        id = {'ared7_jsonviewer_body' + this.props.id}
+                        id = {uniqueID + '-content-box'}
                         contentEditable = { true }  
                         style = {{
                             display    : 'inline-block',
@@ -237,34 +258,23 @@ class JSONInput extends Component {
         );
     }
     renderLabels(){
-        let 
-            lines = this.state.lines,
-            error = this.state.error;
-
-        let line;
-        if(error) line = error.line;
-        if([null,undefined,false,0,''].indexOf(lines)>-1) lines = 1;
-        let labels = new Array(lines);
-        for(var i = 0; i < lines - 1; i++) labels[i] = i;
-        return labels.map( i => {
-            if(i!==line-1)
+        const
+            uniqueID  = this.uniqueID + '-line-',
+            colors    = this.colors,
+            errorLine = this.state.error ? this.state.error.line : -1,
+            lines     = this.state.lines ? this.state.lines : 1;
+        let
+            labels    = new Array(lines);
+        for(var i = 0; i < lines - 1; i++) labels[i] = i + 1;
+        return labels.map( number => {
+            const color = number !== errorLine ? colors.default : 'red';
             return (
                 <div 
-                    key = {'line ' + (i + 1)}
-                    id  = {'line ' + (i + 1)}
+                    key   = {uniqueID + number}
+                    id    = {uniqueID + number}
+                    style = {{ color : color }}
                 >
-                    {i + 1}
-                </div>
-            );
-            return (
-                <div 
-                    key = {'line ' + (i + 1)}
-                    id  = {'line ' + (i + 1)}
-                    style = {{
-                        color: 'red'
-                    }}
-                >
-                    {i + 1}
+                    {number}
                 </div>
             );
         });
@@ -272,7 +282,8 @@ class JSONInput extends Component {
     createMarkup(markupText){ return { __html: '' + markupText }; }
     update(){
         const
-            container = document.getElementById('ared7_jsonviewer_body' + this.props.id),
+            uniqueID  = this.uniqueID,
+            container = document.getElementById(uniqueID + '-content-box'),
             data      = this.tokenize(container);   
         this.setState({
             plainText  : data.indentation,
@@ -303,12 +314,14 @@ class JSONInput extends Component {
         if(this.state.focused) this.update();
     }
     onScroll(event){
-        var labels = document.getElementById('ared7_jsonviewer_labels' + this.props.id);
+        const uniqueID = this.uniqueID;
+        var labels = document.getElementById(uniqueID + '-labels');
         labels.scrollTop = event.target.scrollTop;
     }
     componentDidUpdate(){ this.showPlaceholder(); }
     componentDidMount(){
-        document.getElementById('ared7_jsonviewer_body' + this.props.id).addEventListener('paste', e => {
+        const uniqueID = this.uniqueID;
+        document.getElementById(uniqueID + '-content-box').addEventListener('paste', e => {
             e.preventDefault();
             var text = e.clipboardData.getData('text/plain');
             document.execCommand('insertHTML', false, text);
