@@ -316,12 +316,15 @@ class JSONInput extends Component {
             );
         });
     }
-    createMarkup(markupText){ return { __html: '' + markupText }; }
+    createMarkup(markupText){
+        if(markupText===undefined) return { __html: '' };
+        return { __html: '' + markupText };
+    }
     update(){
         const
             uniqueID  = this.uniqueID,
             container = document.getElementById(uniqueID + '-content-box'),
-            data      = this.tokenize(container);   
+            data      = this.tokenize(container);
         this.setState({
             plainText  : data.indentation,
             markupText : data.markup,
