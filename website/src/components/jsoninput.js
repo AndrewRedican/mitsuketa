@@ -1126,12 +1126,27 @@ class JSONInput extends Component {
                 }
             }
             if(error){
+                let _line_fallback = 1;
+                function countCarrigeReturn(string){
+                    let count = 0;
+                    for(var i = 0; i < string.length; i++){
+                        if(['\n','\r'].indexOf(string[i])>-1) count++;
+                    }
+                    return count;
+                }
+                _line = 1;
                 for(var i = 0; i < buffer.tokens_merge.length; i++){
-                    const token = buffer.tokens_merge[i];
-                    if(token.type==='linebreak') _line++;
-                    buffer.markup += newSpan(token,colors); 
+                    const
+                        token  = buffer.tokens_merge[i],
+                        type   = token.type,
+                        string = token.string;
+                    if(type==='linebreak') _line++;
+                    buffer.markup += newSpan(token,colors);
+                    _line_fallback += countCarrigeReturn(string);
                 }
                 _line++;
+                _line_fallback++;
+                if(_line < _line_fallback) _line = _line_fallback;
             }
             buffer.tokens_merge.forEach( function(token) { buffer.indented += token.string; });
             return {
