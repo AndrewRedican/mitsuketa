@@ -1052,37 +1052,6 @@ class JSONInput extends Component {
                 line = _line;
                 setError(tokenIndex,'Unexpected token \'' + token.string + '\' found');
             }
-            if(error) buffer.json = undefined;
-            if(!error){
-                /**
-                 * Adjust spacing
-                 * Check Depth
-                 * 
-                 * Space add at end of key should not create an error based on depth
-                 */
-                let depth = 0;
-                buffer.tokens_merge.forEach( function(token,i) {
-                    switch(token.type){
-                        case 'symbol' :
-                            switch(token.string){
-                                case '[' : case '{' : depth++; break;
-                                case ']' : case '}' : depth--; break;
-                                default : break;
-                            }
-                        break;
-                        case 'space' :
-                            /**
-                             * Count spaces,
-                             * adjust if too much or too little
-                             * make sure not to adjust different the space between key colon value
-                             */
-                            //buffer.tokens_merge[i] = '';
-                            //console.log('depth:',depth,'space string:',token.string.length);
-                        default : break;
-                    }
-                });
-            }
-
             const colors = this.colors;
             let
                 _line   = 1,
@@ -1120,6 +1089,7 @@ class JSONInput extends Component {
             function newLineBreakAndIndent(byPass=false){ 
                 return newLineBreak(byPass) + newIndent();
             };
+            if(!error)
             for(var i = 0; i < buffer.tokens_merge.length; i++){
                 const
                     token  = buffer.tokens_merge[i],
@@ -1154,6 +1124,14 @@ class JSONInput extends Component {
                         }
                     break;
                 }
+            }
+            if(error){
+                for(var i = 0; i < buffer.tokens_merge.length; i++){
+                    const token = buffer.tokens_merge[i];
+                    if(token.type==='linebreak') _line++;
+                    buffer.markup += newSpan(token,colors); 
+                }
+                _line++;
             }
             buffer.tokens_merge.forEach( function(token) { buffer.indented += token.string; });
             return {
