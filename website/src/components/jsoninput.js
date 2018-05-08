@@ -426,6 +426,9 @@ class JSONInput extends Component {
                     case '#text' :
                         buffer.tokens_unknown.push({ string : child.wholeText, type : 'unknown' });
                     break;
+                    case 'FONT' :
+                        buffer.tokens_unknown.push({ string : child.textContent, type : 'unknown' });
+                    break;
                     default : break;
                 }
             });
