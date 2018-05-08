@@ -1031,13 +1031,15 @@ class JSONInput extends Component {
                     charTotal  = 0,
                     tokenIndex = 0,
                     token      = false,
-                    _line      = 1;
-                while(charTotal < errPosition){
+                    _line      = 1,
+                    exitWhile  = false;
+                while(charTotal < errPosition && !exitWhile){
                     token = buffer.tokens_merge[tokenIndex];
                     if('linebreak'===token.type) _line++;
                     if(['space','linebreak'].indexOf(token.type)===-1) charTotal += token.string.length;
                     if(charTotal >= errPosition) break;
                     tokenIndex++;
+                    if(!buffer.tokens_merge[tokenIndex+1]) exitWhile = true;
                 }
                 line = _line;
                 setError(tokenIndex,'Unexpected token \'' + token.string + '\' found');
