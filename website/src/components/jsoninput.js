@@ -284,13 +284,15 @@ class JSONInput extends Component {
         });
     }
     stopEvent(event){
-
+        if(!event) return;
+        event.preventDefault();
+        event.stopPropagation();
     }
     onKeyPress(event){
-        console.log(event);
+        if('viewOnly' in this.props) if(this.props.viewOnly) this.stopEvent(event);
     }
     onKeyDown(event){
-        console.log(event);
+        if('viewOnly' in this.props) if(this.props.viewOnly) this.stopEvent(event);
     }
     onClick(){ 
         if('viewOnly' in this.props) if(this.props.viewOnly) return;

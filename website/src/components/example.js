@@ -211,10 +211,11 @@ class Example extends Component{
                             <div className = 'default'>
                                 <ErrorBoundary>
                                     <JSONInput 
-                                        id          = {fxName+'-inputBox'}
-                                        colors      = { light }
-                                        height      = '400px'
-                                        width       = '350px'
+                                        id       = {fxName+'-inputBox'}
+                                        colors   = { light }
+                                        height   = '400px'
+                                        width    = '350px'
+                                        viewOnly = {false}
                                         {...placeholder}
                                     />
                                 </ErrorBoundary>    
@@ -224,10 +225,11 @@ class Example extends Component{
                             <div className = 'default'>
                                 <ErrorBoundary>
                                     <JSONInput 
-                                        id     = {fxName+'-outputBox'}
-                                        colors = { light }
-                                        height = '400px'
-                                        width  = '350px'
+                                        id       = {fxName+'-outputBox'}
+                                        colors   = { light }
+                                        height   = '400px'
+                                        width    = '350px'
+                                        viewOnly = {false}
                                     />
                                 </ErrorBoundary>    
                             </div>
