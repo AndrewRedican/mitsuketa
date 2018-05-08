@@ -490,7 +490,10 @@ class JSONInput extends Component {
                         case '2'  : case '3' :
                         case '4'  : case '5' :
                         case '6'  : case '7' :
-                        case '8'  : case '9' :       pushAndStore(char,'number');    break;
+                        case '8'  : case '9' :
+                            if(buffer.active==='string') pushAndStore(char,'string');
+                            else pushAndStore(char,'number');
+                        break;
                         case '-'  :
                             if(i < text.length - 1)
                             if('0123456789'.indexOf(text.charAt(i + 1)) > -1){
