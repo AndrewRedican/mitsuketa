@@ -90,7 +90,6 @@ class JSONInput extends Component {
                                 height                   : '30px',
                                 width                    : '30px',
                                 position                 : 'absolute',
-                                zIndex                   : 100,
                                 top                      : 0,
                                 right                    : 0,
                                 transform                : 'translate(-25%,25%)',
