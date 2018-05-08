@@ -1014,6 +1014,7 @@ class JSONInput extends Component {
                 }
             }
             if(!error)
+            if([undefined,''].indexOf(buffer.json)===-1)
             try{ buffer.jsObject = JSON.parse(buffer.json); }
             catch(err){
                 const 
