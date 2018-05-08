@@ -716,22 +716,6 @@ class JSONInput extends Component {
                 }
                 buffer.tokens_merge.push(mergedToken);
             }
-            /**
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             * 
-             */
             const 
                 quotes = '\'"',
                 alphanumeric = (
