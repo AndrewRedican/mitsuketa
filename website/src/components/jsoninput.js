@@ -65,7 +65,7 @@ class JSONInput extends Component {
             uniqueID    = this.uniqueID,
             colors      = this.colors,
             confirmGood = this.confirmGood,
-            hasError    = error ? error.token ? true : false : false,
+            hasError    = error ? 'token' in error : false,
             totalHeight = 'height' in this.props ? (parseInt(this.props.height.replace(/px/,'')) + 60) + 'px' : '610px',
             bodyHeight  =  (parseInt(totalHeight.replace(/px/,'')) - 60) + 'px';
         return (
@@ -513,8 +513,7 @@ class JSONInput extends Component {
                 return buffer.quarks;
             }
             buffer.tokens_unknown.forEach( function(token,i) {
-                if(['unknown','error'].indexOf(token.type) === -1) buffer.tokens_proto.push(token);
-                else buffer.tokens_proto = buffer.tokens_proto.concat(quarkize(token.string,'proto'));                
+                buffer.tokens_proto = buffer.tokens_proto.concat(quarkize(token.string,'proto'));      
             });
             function validToken(string,type){
                 const quotes = '\'"';
@@ -1018,7 +1017,9 @@ class JSONInput extends Component {
             }
             if(!error)
             if([undefined,''].indexOf(buffer.json)===-1)
-            try{ buffer.jsObject = JSON.parse(buffer.json); }
+            try{ 
+                buffer.jsObject = JSON.parse(buffer.json);
+            }
             catch(err){
                 const 
                     errorMessage = err.message,
