@@ -20,27 +20,32 @@ class JSONInput extends Component {
         let colors = {};
         if('colors' in this.props)
             colors = {
-                default         : 'default'         in this.props.colors ? this.props.colors.default         : '#D4D4D4',
-                string          : 'string'          in this.props.colors ? this.props.colors.string          : '#CE8453',
-                number          : 'number'          in this.props.colors ? this.props.colors.number          : '#B5CE9F',
-                colon           : 'colon'           in this.props.colors ? this.props.colors.colon           : '#49B8F7',
-                keys            : 'keys'            in this.props.colors ? this.props.colors.keys            : '#9CDCFE',
-                keys_whiteSpace : 'keys_whiteSpace' in this.props.colors ? this.props.colors.keys_whiteSpace : '#AF74A5',
-                primitive       : 'primitive'       in this.props.colors ? this.props.colors.primitive       : '#6392C6',
-                error           : 'error'           in this.props.colors ? this.props.colors.error           : '#ED0000'
+                default            : 'default'            in this.props.colors ? this.props.colors.default            : '#D4D4D4',
+                string             : 'string'             in this.props.colors ? this.props.colors.string             : '#CE8453',
+                number             : 'number'             in this.props.colors ? this.props.colors.number             : '#B5CE9F',
+                colon              : 'colon'              in this.props.colors ? this.props.colors.colon              : '#49B8F7',
+                keys               : 'keys'               in this.props.colors ? this.props.colors.keys               : '#9CDCFE',
+                keys_whiteSpace    : 'keys_whiteSpace'    in this.props.colors ? this.props.colors.keys_whiteSpace    : '#AF74A5',
+                primitive          : 'primitive'          in this.props.colors ? this.props.colors.primitive          : '#6392C6',
+                error              : 'error'              in this.props.colors ? this.props.colors.error              : '#ED0000',
+                background         : 'background'         in this.props.colors ? this.props.colors.background         : '#1E1E1E',
+                background_warning : 'background_warning' in this.props.colors ? this.props.colors.background_warning : '#1E1E1E'
             };
         else
             colors = {
-                default         : '#D4D4D4',
-                string          : '#CE8453',
-                number          : '#B5CE9F',
-                colon           : '#49B8F7',
-                keys            : '#9CDCFE',
-                keys_whiteSpace : '#AF74A5',
-                primitive       : '#6392C6',
-                error           : '#ED0000'
+                default            : '#D4D4D4',
+                string             : '#CE8453',
+                number             : '#B5CE9F',
+                colon              : '#49B8F7',
+                keys               : '#9CDCFE',
+                keys_whiteSpace    : '#AF74A5',
+                primitive          : '#6392C6',
+                error              : '#ED0000',
+                background         : '#1E1E1E',
+                background_warning : '#1E1E1E'
             };
         this.colors = colors;
+        this.confirmGood = 'confirmGood' in this.props ? this.props.confirmGood : true;
         this.state  = { 
             preText     : '',
             markupText  : '',
@@ -52,33 +57,21 @@ class JSONInput extends Component {
             focused     : false
         };
     }
-    /*
-
-                                            <path
-                                                fillRule = 'evenodd' 
-                                                clipRule = 'evenodd'
-                                                fill     = 'green'
-                                                d='M39.363,79L16,55.49l11.347-11.419L39.694,56.49L72.983,23L84,34.085L39.363,79z'
-                                            />
-
-    */
     render(){
         const 
-            markupText = this.state.markupText,
-            error      = this.state.error,
-            focused    = this.state.focused,
-            uniqueID   = this.uniqueID;
-        const
+            markupText  = this.state.markupText,
+            error       = this.state.error,
+            focused     = this.state.focused,
+            uniqueID    = this.uniqueID,
+            colors      = this.colors,
+            confirmGood = this.confirmGood,
             hasError    = error ? error.token ? true : false : false,
             totalHeight = 'height' in this.props ? (parseInt(this.props.height.replace(/px/,'')) + 60) + 'px' : '610px',
             bodyHeight  =  (parseInt(totalHeight.replace(/px/,'')) - 60) + 'px';
-
-        //errorMessageStyle
-        
         return (
             <div
-                name  = 'container'
-                id    = {uniqueID + '-container'}
+                name  = 'outer-box'
+                id    = {uniqueID + '-outer-box'}
                 style = {{
                     display    : 'block',
                     overflow   : 'none',
@@ -86,148 +79,193 @@ class JSONInput extends Component {
                     width      : '479px',
                     margin     : 0,
                     boxSizing  : 'border-box',
-                    overflow   : 'hidden',
-                    fontFamily : 'Roboto, sans-serif'
+                    position   : 'relative'
                 }}
             >
-                <div
-                    name  = 'warning-box'
-                    id    = {uniqueID + '-warning-box'}
-                    style = {{
-                        display                  : 'block',
-                        overflow                 : 'hidden',
-                        height                   : hasError ? '60px' : '0px',
-                        width                    : '479px',
-                        margin                   : 0,
-                        backgroundColor          : 'colors' in this.props ? 'background' in this.props.colors ? this.props.colors.background : '#1E1E1E' : '#1E1E1E',
-                        borderBottom             : '2px solid #f4433680',
-                        transitionDuration       : '0.2s',
-                        transitionTimingFunction : 'cubic-bezier(0, 1, 0.5, 1)'
-                    }}
-                >
-                    <span
-                        style = {{
-                            display       : 'inline-block',
-                            height        : '60px',
-                            width         : '60px',
-                            margin        : 0,
-                            boxSizing     : 'border-box',
-                            overflow      : 'hidden',
-                            verticalAlign : 'top',
-                            pointerEvents : 'none'
-                        }} 
-                    >
+                {
+                    confirmGood ?
                         <div
                             style = {{
-                                position      : 'relative',
-                                top           : 0,
-                                left          : 0,
+                                opacity                  : hasError ? 0 : 1,
+                                height                   : '30px',
+                                width                    : '30px',
+                                position                 : 'absolute',
+                                zIndex                   : 100,
+                                top                      : 0,
+                                right                    : 0,
+                                transform                : 'translate(-25%,25%)',
+                                pointerEvents            : 'none',
+                                transitionDuration       : '0.2s',
+                                transitionTimingFunction : 'cubic-bezier(0, 1, 0.5, 1)'
+                            }}
+                        >
+                            <svg
+                                height  = '30px'
+                                width   = '30px'
+                                viewBox = '0 0 100 100'
+                            >
+                                <path
+                                    fillRule = 'evenodd' 
+                                    clipRule = 'evenodd'
+                                    fill     = 'green'
+                                    opacity  = '0.85'
+                                    d='M39.363,79L16,55.49l11.347-11.419L39.694,56.49L72.983,23L84,34.085L39.363,79z'
+                                />
+                            </svg>
+                        </div>
+                    : void(0)
+                }
+                <div
+                    name  = 'container'
+                    id    = {uniqueID + '-container'}
+                    style = {{
+                        display    : 'block',
+                        height     : totalHeight,
+                        width      : '479px',
+                        margin     : 0,
+                        boxSizing  : 'border-box',
+                        overflow   : 'hidden',
+                        fontFamily : 'Roboto, sans-serif'
+                    }}
+                >
+                    <div
+                        name  = 'warning-box'
+                        id    = {uniqueID + '-warning-box'}
+                        style = {{
+                            display                  : 'block',
+                            overflow                 : 'hidden',
+                            height                   : hasError ? '60px' : '0px',
+                            width                    : '479px',
+                            margin                   : 0,
+                            backgroundColor          : colors.background_warning,
+                            transitionDuration       : '0.2s',
+                            transitionTimingFunction : 'cubic-bezier(0, 1, 0.5, 1)'
+                        }}
+                    >
+                        <span
+                            style = {{
+                                display       : 'inline-block',
                                 height        : '60px',
                                 width         : '60px',
                                 margin        : 0,
+                                boxSizing     : 'border-box',
+                                overflow      : 'hidden',
+                                verticalAlign : 'top',
                                 pointerEvents : 'none'
-                            }}
+                            }} 
                         >
                             <div
                                 style = {{
-                                    position      : 'absolute',
-                                    top           : '50%',
-                                    left          : '50%',
-                                    transform     : 'translate(-50%, -50%)',
+                                    position      : 'relative',
+                                    top           : 0,
+                                    left          : 0,
+                                    height        : '60px',
+                                    width         : '60px',
+                                    margin        : 0,
                                     pointerEvents : 'none'
                                 }}
                             >
-                                <svg
-                                    height = '25px'
-                                    width  = '25px'
-                                    viewBox = '0 0 100 100'
+                                <div
+                                    style = {{
+                                        position      : 'absolute',
+                                        top           : '50%',
+                                        left          : '50%',
+                                        transform     : 'translate(-50%, -50%)',
+                                        pointerEvents : 'none'
+                                    }}
                                 >
-                                    <path 
-                                        fillRule ='evenodd'
-                                        clipRule ='evenodd'
-                                        fill     = 'red'
-                                        d        = 'M73.9,5.75c0.467-0.467,1.067-0.7,1.8-0.7c0.7,0,1.283,0.233,1.75,0.7l16.8,16.8  c0.467,0.5,0.7,1.084,0.7,1.75c0,0.733-0.233,1.334-0.7,1.801L70.35,50l23.9,23.95c0.5,0.467,0.75,1.066,0.75,1.8  c0,0.667-0.25,1.25-0.75,1.75l-16.8,16.75c-0.534,0.467-1.117,0.7-1.75,0.7s-1.233-0.233-1.8-0.7L50,70.351L26.1,94.25  c-0.567,0.467-1.167,0.7-1.8,0.7c-0.667,0-1.283-0.233-1.85-0.7L5.75,77.5C5.25,77,5,76.417,5,75.75c0-0.733,0.25-1.333,0.75-1.8  L29.65,50L5.75,26.101C5.25,25.667,5,25.066,5,24.3c0-0.666,0.25-1.25,0.75-1.75l16.8-16.8c0.467-0.467,1.05-0.7,1.75-0.7  c0.733,0,1.333,0.233,1.8,0.7L50,29.65L73.9,5.75z'
-                                    />
-                                </svg>
+                                    <svg
+                                        height  = '25px'
+                                        width   = '25px'
+                                        viewBox = '0 0 100 100'
+                                    >
+                                        <path 
+                                            fillRule ='evenodd'
+                                            clipRule ='evenodd'
+                                            fill     = 'red'
+                                            d        = 'M73.9,5.75c0.467-0.467,1.067-0.7,1.8-0.7c0.7,0,1.283,0.233,1.75,0.7l16.8,16.8  c0.467,0.5,0.7,1.084,0.7,1.75c0,0.733-0.233,1.334-0.7,1.801L70.35,50l23.9,23.95c0.5,0.467,0.75,1.066,0.75,1.8  c0,0.667-0.25,1.25-0.75,1.75l-16.8,16.75c-0.534,0.467-1.117,0.7-1.75,0.7s-1.233-0.233-1.8-0.7L50,70.351L26.1,94.25  c-0.567,0.467-1.167,0.7-1.8,0.7c-0.667,0-1.283-0.233-1.85-0.7L5.75,77.5C5.25,77,5,76.417,5,75.75c0-0.733,0.25-1.333,0.75-1.8  L29.65,50L5.75,26.101C5.25,25.667,5,25.066,5,24.3c0-0.666,0.25-1.25,0.75-1.75l16.8-16.8c0.467-0.467,1.05-0.7,1.75-0.7  c0.733,0,1.333,0.233,1.8,0.7L50,29.65L73.9,5.75z'
+                                        />
+                                    </svg>
+                                </div>
                             </div>
-                        </div>
-                    </span>
-                    <span
-                        style = {{
-                            display       : 'inline-block',
-                            height        : '60px',
-                            width         : '419px',
-                            margin        : 0,
-                            overflow      : 'hidden',
-                            verticalAlign : 'top',
-                            position      : 'absolute',
-                            pointerEvents : 'none'
-                        }}    
-                    >
-                        { this.renderErrorMessage() }
-                    </span>
-                </div>
-                <div
-                    name  = 'body'
-                    id    = {uniqueID + '-body'}
-                    style = {{
-                        display                  : 'block',
-                        overflow                 : 'none',
-                        height                   : hasError ? bodyHeight : totalHeight,
-                        width                    : '479px',
-                        margin                   : 0,
-                        resize                   : 'none',
-                        fontFamily               : 'Roboto Mono, Monaco, monospace',
-                        fontSize                 : '11px',
-                        backgroundColor          : 'colors' in this.props ? 'background' in this.props.colors ? this.props.colors.background : '#1E1E1E' : '#1E1E1E',
-                        transitionDuration       : '0.2s',
-                        transitionTimingFunction : 'cubic-bezier(0, 1, 0.5, 1)'
-                    }}
-                >
-                    <div
-                        name  = 'label'
-                        id    = {uniqueID + '-labels'}
-                        style = {{
-                            display   : 'inline-block',
-                            boxSizing : 'border-box',
-                            height    : '100%',
-                            width     : '9%',
-                            margin    : 0,
-                            padding   : '5px 0px 5px 10px',
-                            overflow  : 'hidden',
-                            color     : '#D4D4D4'
-                        }}
-                    >
-                    { this.renderLabels() }
+                        </span>
+                        <span
+                            style = {{
+                                display       : 'inline-block',
+                                height        : '60px',
+                                width         : '419px',
+                                margin        : 0,
+                                overflow      : 'hidden',
+                                verticalAlign : 'top',
+                                position      : 'absolute',
+                                pointerEvents : 'none'
+                            }}    
+                        >
+                            { this.renderErrorMessage() }
+                        </span>
                     </div>
                     <div
-                        id = {uniqueID + '-content-box'}
-                        contentEditable = { true }  
+                        name  = 'body'
+                        id    = {uniqueID + '-body'}
                         style = {{
-                            display    : 'inline-block',
-                            boxSizing  : 'border-box',
-                            height     : '100%',
-                            width      : '91%',
-                            margin     : 0,
-                            padding    : '5px',
-                            overflowX  : 'hidden',
-                            overflowY  : 'auto',
-                            wordWrap   : 'break-word',
-                            whiteSpace : 'pre-line',
-                            color      : '#D4D4D4',
-                            outline    : 'none'
+                            display                  : 'block',
+                            overflow                 : 'none',
+                            height                   : hasError ? bodyHeight : totalHeight,
+                            width                    : '479px',
+                            margin                   : 0,
+                            resize                   : 'none',
+                            fontFamily               : 'Roboto Mono, Monaco, monospace',
+                            fontSize                 : '11px',
+                            backgroundColor          : colors.background,
+                            transitionDuration       : '0.2s',
+                            transitionTimingFunction : 'cubic-bezier(0, 1, 0.5, 1)'
                         }}
-                        dangerouslySetInnerHTML = { this.createMarkup(markupText) }
-                        onKeyPress     = { this.onKeyPress }
-                        onKeyDown      = { this.onKeyDown }
-                        onClick        = { this.onClick }
-                        onBlur         = { this.onBlur }
-                        onScroll       = { this.onScroll }
-                        autoComplete   = 'off'
-                        autoCorrect    = 'off' 
-                        autoCapitalize = 'off'
-                        spellCheck     = { false }
-                    />
+                    >
+                        <div
+                            name  = 'label'
+                            id    = {uniqueID + '-labels'}
+                            style = {{
+                                display   : 'inline-block',
+                                boxSizing : 'border-box',
+                                height    : '100%',
+                                width     : '9%',
+                                margin    : 0,
+                                padding   : '5px 0px 5px 10px',
+                                overflow  : 'hidden',
+                                color     : '#D4D4D4'
+                            }}
+                        >
+                        { this.renderLabels() }
+                        </div>
+                        <div
+                            id = {uniqueID + '-content-box'}
+                            contentEditable = { true }  
+                            style = {{
+                                display    : 'inline-block',
+                                boxSizing  : 'border-box',
+                                height     : '100%',
+                                width      : '91%',
+                                margin     : 0,
+                                padding    : '5px',
+                                overflowX  : 'hidden',
+                                overflowY  : 'auto',
+                                wordWrap   : 'break-word',
+                                whiteSpace : 'pre-line',
+                                color      : '#D4D4D4',
+                                outline    : 'none'
+                            }}
+                            dangerouslySetInnerHTML = { this.createMarkup(markupText) }
+                            onKeyPress     = { this.onKeyPress }
+                            onKeyDown      = { this.onKeyDown }
+                            onClick        = { this.onClick }
+                            onBlur         = { this.onBlur }
+                            onScroll       = { this.onScroll }
+                            autoComplete   = 'off'
+                            autoCorrect    = 'off' 
+                            autoCapitalize = 'off'
+                            spellCheck     = { false }
+                        />
+                    </div>
                 </div>
             </div>
         );
