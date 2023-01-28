@@ -1,3 +1,9 @@
+**Warning:** [mitsuketa](https://www.npmjs.com/package/mitsuketa) project is no longer maintained in favor of [@enio.ai/data-ferret](https://www.npmjs.com/package/@enio.ai/data-ferret).
+
+Thanks for using this project. If you have concerns or need help with migration, you can leave a comment or question on [enio's discussion board](https://github.com/enio-ireland/enio/discussions).
+
+<br>
+
 # Mitsuketa ![Build Status](https://travis-ci.com/AndrewRedican/mitsuketa.svg?branch=master)
 
 <p align="center"><img src=http://i.imgur.com/qF1mmY5.png><br /><br />A Javascript library that enables you to handle deeply nested objects easily.</p>
